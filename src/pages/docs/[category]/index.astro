@@ -1,6 +1,6 @@
 ---
 import Base from "../../../layouts/Base.astro";
-import { CATEGORIES, getDocsInCategory } from "../../../lib/content";
+import { CATEGORIES, getDocsInCategory, stripMd } from "../../../lib/content";
 
 export async function getStaticPaths() {
   return CATEGORIES.map((c) => ({
@@ -28,7 +28,10 @@ const docs = getDocsInCategory(category.key);
           </a>
           {d.highlight && (
             <p style="color:var(--text-muted); font-size:0.9rem; margin:6px 0 0;">
-              {d.highlight.length > 140 ? d.highlight.slice(0, 140) + "…" : d.highlight}
+              {(() => {
+                const plain = stripMd(d.highlight);
+                return plain.length > 140 ? plain.slice(0, 140) + "…" : plain;
+              })()}
             </p>
           )}
         </li>

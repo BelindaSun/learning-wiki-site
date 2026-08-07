@@ -3,6 +3,7 @@ import path from "node:path";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
+import remarkCjkFriendly from "remark-cjk-friendly";
 import remarkRehype from "remark-rehype";
 import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
@@ -26,6 +27,7 @@ export interface WikiDoc {
   dir: string;
   title: string;
   highlight: string | null;
+  highlightHtml: string | null;
   html: string;
   headings: Heading[];
   updatedLine: string | null;
@@ -101,10 +103,35 @@ function slugify(text: string): string {
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
+  .use(remarkCjkFriendly)
   .use(rewriteLinks)
   .use(remarkRehype, { allowDangerousHtml: false })
   .use(rehypeSlug)
   .use(rehypeStringify);
+
+const inlineProcessor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkCjkFriendly)
+  .use(remarkRehype, { allowDangerousHtml: false })
+  .use(rehypeStringify);
+
+/** Renders a short one-paragraph markdown snippet (e.g. the "**核心概念**: ..."
+ * line) to inline HTML, stripping the wrapping <p> tag. */
+function renderInline(text: string): string {
+  const html = String(inlineProcessor.processSync(text));
+  return html.replace(/^<p>/, "").replace(/<\/p>\n?$/, "");
+}
+
+/** Plain-text version of a markdown snippet, for use in excerpts where HTML
+ * would be unsafe to truncate. */
+export function stripMd(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+}
 
 function parseDoc(repoRelativePath: string): WikiDoc {
   const filePath = path.join(CACHE_DIR, repoRelativePath);
@@ -136,6 +163,8 @@ function parseDoc(repoRelativePath: string): WikiDoc {
     if (lines[i].trim() !== "" && !lines[i].startsWith(">")) break;
   }
 
+  const highlightHtml = highlight ? renderInline(highlight) : null;
+
   let updatedLine: string | null = null;
   const updatedMatch = raw.match(/\*\*最后更新\*\*[：:]\s*(.+)/);
   if (updatedMatch) updatedLine = updatedMatch[1].trim();
@@ -159,6 +188,7 @@ function parseDoc(repoRelativePath: string): WikiDoc {
     dir: normDir,
     title,
     highlight,
+    highlightHtml,
     html,
     headings,
     updatedLine,

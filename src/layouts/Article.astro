@@ -32,7 +32,7 @@ const breadcrumbHref = category ? `/docs/${category.key}/` : isConversation ? "/
       }
       <h1 class="article-title">{doc.title}</h1>
       {doc.updatedLine && <p class="article-updated">最后更新: {doc.updatedLine}</p>}
-      {doc.highlight && <div class="article-highlight">{doc.highlight}</div>}
+      {doc.highlightHtml && <div class="article-highlight" set:html={doc.highlightHtml} />}
       <div class="article-body" set:html={doc.html} />
     </div>
     {
