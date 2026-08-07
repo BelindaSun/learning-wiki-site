@@ -1,0 +1,53 @@
+---
+import Base from "./Base.astro";
+import type { WikiDoc } from "../lib/content";
+import { CATEGORIES } from "../lib/content";
+
+interface Props {
+  doc: WikiDoc;
+}
+
+const { doc } = Astro.props;
+
+const categoryKey = doc.dir.startsWith("docs/") ? doc.dir.replace(/^docs\//, "") : null;
+const category = CATEGORIES.find((c) => c.key === categoryKey);
+const isConversation = doc.dir === "docs/conversations";
+const breadcrumbLabel = category
+  ? category.label
+  : isConversation
+  ? "完整对话记录"
+  : null;
+const breadcrumbHref = category ? `/docs/${category.key}/` : isConversation ? "/docs/conversations/" : null;
+---
+
+<Base title={doc.title}>
+  <div class="article-page">
+    <div>
+      {
+        breadcrumbLabel && (
+          <p class="breadcrumb">
+            <a href={breadcrumbHref}>{breadcrumbLabel}</a> / {doc.title}
+          </p>
+        )
+      }
+      <h1 class="article-title">{doc.title}</h1>
+      {doc.updatedLine && <p class="article-updated">最后更新: {doc.updatedLine}</p>}
+      {doc.highlight && <div class="article-highlight">{doc.highlight}</div>}
+      <div class="article-body" set:html={doc.html} />
+    </div>
+    {
+      doc.headings.length > 0 && (
+        <aside class="article-toc">
+          <p class="toc-label">本页目录</p>
+          <ul>
+            {doc.headings.map((h) => (
+              <li class={h.depth === 3 ? "depth-3" : ""}>
+                <a href={`#${h.id}`}>{h.text}</a>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )
+    }
+  </div>
+</Base>
