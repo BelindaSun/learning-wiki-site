@@ -7,12 +7,14 @@ const latest = getChangelogLatest();
 const extraCards = [
   { key: "mental-models", label: "心智模型", icon: "🧠", description: "看世界方式的变迁轨迹", href: "/mental-models" },
   { key: "concepts", label: "全部概念索引", icon: "📖", description: "按字母排序的所有主题", href: "/index-all-concepts" },
+  { key: "glossary", label: "术语表", icon: "🔤", description: "忘了某个词是什么意思？一句话查一下", href: "/glossary" },
 ];
 
-const readingPath = [
-  { n: 1, text: "如果你对 Agent 感兴趣，从", link: "Agent 架构", href: "/docs/ai-core/agent-architecture" },
-  { n: 2, text: "如果你想实战，从", link: "Skill 设计", href: "/docs/ai-application/skills-business-landscape" },
-  { n: 3, text: "如果你想了解影响，从", link: "职业冲击", href: "/docs/career-impact/model-to-system-war" },
+const entryChoices = [
+  { icon: "🗺️", label: "我完全没背景", desc: "New to AI? 从 Start Here 开始，60-90 分钟建立最小地图", href: "/start-here" },
+  { icon: "🧭", label: "我已经懂基础了", desc: "直接去下面的分类里探索", href: "#structure" },
+  { icon: "🧠", label: "我想看想法怎么连起来的", desc: "看心智模型变迁史", href: "/mental-models" },
+  { icon: "🔤", label: "我卡在一个词上", desc: "去术语表一句话查一下", href: "/glossary" },
 ];
 ---
 
@@ -24,9 +26,25 @@ const readingPath = [
       一个持续增长的个人学习知识库。主要记录 AI 学习，兼收其他感兴趣的话题。每天在这里添加新的学习内容——来自对话、论文、实验、思考。
     </p>
     <blockquote>"The best way to learn is to teach. The best way to remember is to write."</blockquote>
+    <p style="margin-top: 28px;">
+      <a href="/start-here" class="cta-button">🗺️ 第一次来？从 Start Here 开始 →</a>
+    </p>
   </div>
 
-  <div id="structure" class="section-label">结构</div>
+  <div class="section-label">怎么开始</div>
+  <div class="card-grid">
+    {
+      entryChoices.map((c) => (
+        <a class="card" href={c.href}>
+          <div class="card-icon">{c.icon}</div>
+          <h3>{c.label}</h3>
+          <p>{c.desc}</p>
+        </a>
+      ))
+    }
+  </div>
+
+  <div id="structure" class="section-label">结构（按主题探索）</div>
   <div class="card-grid">
     {
       CATEGORIES.map((c) => (
@@ -46,22 +64,6 @@ const readingPath = [
         </a>
       ))
     }
-  </div>
-
-  <div id="reading" class="reading-path">
-    <div class="section-label" style="margin-top:0">建议阅读方式</div>
-    <ol>
-      {
-        readingPath.map((r) => (
-          <li>
-            <span class="num">{r.n}</span>
-            <span>
-              {r.text} <a href={r.href}>{r.link}</a> 开始
-            </span>
-          </li>
-        ))
-      }
-    </ol>
   </div>
 
   <div class="updates-table">
