@@ -1,6 +1,7 @@
 ---
 import Base from "../../../layouts/Base.astro";
-import { CATEGORIES, getDocsInCategory, stripMd } from "../../../lib/content";
+import Article from "../../../layouts/Article.astro";
+import { CATEGORIES, getDocsInCategory, getDocBySlug, stripMd } from "../../../lib/content";
 
 export async function getStaticPaths() {
   return CATEGORIES.map((c) => ({
@@ -10,33 +11,46 @@ export async function getStaticPaths() {
 }
 
 const { category } = Astro.props;
-const docs = getDocsInCategory(category.key);
+
+// computing-foundations has a hand-authored landing page (Start / Orient /
+// Go Deeper) at docs/computing-foundations/index.md. [...slug].astro
+// deliberately excludes /index routes, so without this it never renders
+// anywhere on the site. Render it here instead of the generic flat file
+// list. Other categories are untouched — same generic listing as before.
+const landingDoc = category.key === "computing-foundations" ? getDocBySlug(`docs/${category.key}/index`) : null;
+const docs = landingDoc ? [] : getDocsInCategory(category.key);
 ---
 
-<Base title={category.label}>
-  <div class="container">
-    <p class="back-nav"><a href="#" data-back>← 返回上一页</a></p>
-    <p class="breadcrumb"><a href="/">首页</a> / {category.label}</p>
-    <h1 class="article-title">{category.icon} {category.label}</h1>
-    <p class="article-updated">{category.description}</p>
-  </div>
-  <ul class="plain-list">
-    {
-      docs.map((d) => (
-        <li>
-          <a href={`/${d.slug}`} style="font-size:1.05rem">
-            {d.title}
-          </a>
-          {d.highlight && (
-            <p style="color:var(--text-muted); font-size:0.9rem; margin:6px 0 0;">
-              {(() => {
-                const plain = stripMd(d.highlight);
-                return plain.length > 140 ? plain.slice(0, 140) + "…" : plain;
-              })()}
-            </p>
-          )}
-        </li>
-      ))
-    }
-  </ul>
-</Base>
+{
+  landingDoc ? (
+    <Article doc={landingDoc} />
+  ) : (
+    <Base title={category.label}>
+      <div class="container">
+        <p class="back-nav"><a href="#" data-back>← 返回上一页</a></p>
+        <p class="breadcrumb"><a href="/">首页</a> / {category.label}</p>
+        <h1 class="article-title">{category.icon} {category.label}</h1>
+        <p class="article-updated">{category.description}</p>
+      </div>
+      <ul class="plain-list">
+        {
+          docs.map((d) => (
+            <li>
+              <a href={`/${d.slug}`} style="font-size:1.05rem">
+                {d.title}
+              </a>
+              {d.highlight && (
+                <p style="color:var(--text-muted); font-size:0.9rem; margin:6px 0 0;">
+                  {(() => {
+                    const plain = stripMd(d.highlight);
+                    return plain.length > 140 ? plain.slice(0, 140) + "…" : plain;
+                  })()}
+                </p>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </Base>
+  )
+}
