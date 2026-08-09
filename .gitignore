@@ -3,6 +3,8 @@ dist/
 
 # fetched content (cloned from BelindaSun/learning-wiki at build time)
 .content-cache/
+# content-repo assets mirrored into public/ at build time by fetch-content.mjs
+public/docs/
 # generated types
 .astro/
 

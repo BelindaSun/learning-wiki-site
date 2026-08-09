@@ -79,7 +79,13 @@ function rewriteLinks() {
       const [pathPart, anchor] = url.split("#");
       if (!pathPart || !pathPart.toLowerCase().endsWith(".md")) return;
       const resolved = path.posix.normalize(path.posix.join(fileDir, pathPart));
-      node.url = "/" + resolved.replace(/\.md$/i, "") + (anchor ? `#${anchor}` : "");
+      // `[...slug].astro` never routes a doc whose slug ends in "/index" (its
+      // content is served at the category's own listing route instead, see
+      // [category]/index.astro), so a link to e.g. "index.md" must resolve to
+      // "/docs/foo/" (trailing slash), not "/docs/foo/index" (no page there).
+      let route = resolved.replace(/\.md$/i, "");
+      route = route.endsWith("/index") ? route.slice(0, -"index".length) : route;
+      node.url = "/" + route + (anchor ? `#${anchor}` : "");
     });
   };
 }
