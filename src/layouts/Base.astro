@@ -20,11 +20,11 @@ const { title } = Astro.props;
     <header class="site-header">
       <a class="brand" href="/">Belinda's Learning Wiki</a>
       <nav>
+        <a href="/">🏠 首页</a>
         <a href="/docs/computing-foundations/">🖥️ Computing Foundations</a>
         <a href="/start-here">🗺️ Learn</a>
         <a href="/glossary">🔤 Look Up</a>
         <a href="/mental-models">🧠 Explore</a>
-        <a href="/#structure">结构</a>
         <a href="/CHANGELOG">更新日志</a>
         <a href="https://github.com/BelindaSun/learning-wiki" target="_blank" rel="noopener">GitHub</a>
       </nav>
@@ -33,5 +33,19 @@ const { title } = Astro.props;
     <footer class="site-footer">
       <p>learning-wiki is maintained by BelindaSun · Deployed with Astro + Vercel</p>
     </footer>
+    <script>
+      // "← 返回上一页" links (data-back): go back in history if we got here
+      // from within the site, otherwise fall back to the homepage.
+      document.querySelectorAll("[data-back]").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (document.referrer.startsWith(location.origin) && history.length > 1) {
+            history.back();
+          } else {
+            location.href = "/";
+          }
+        });
+      });
+    </script>
   </body>
 </html>

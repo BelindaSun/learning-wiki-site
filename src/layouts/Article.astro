@@ -23,6 +23,7 @@ const breadcrumbHref = category ? `/docs/${category.key}/` : isConversation ? "/
 <Base title={doc.title}>
   <div class="article-page">
     <div>
+      <p class="back-nav"><a href="#" data-back>← 返回上一页</a></p>
       {
         breadcrumbLabel && (
           <p class="breadcrumb">

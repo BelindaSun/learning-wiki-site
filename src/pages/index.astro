@@ -11,20 +11,21 @@ const aiPractice = byKey("ai-application");
 const aiResearch = byKey("ai-research");
 const industryImpact = byKey("career-impact");
 
-// 依赖排序的领土堆叠：前沿在上，地基在下。跟导航顺序（CATEGORIES，地基排第一）
-// 是同一份数据的两种表示，故意不统一——见 CLAUDE.md「导航顺序 vs 依赖可视化」。
+// 依赖排序的领土堆叠：前沿在上、窄；地基在下、宽——倒三角形，越宽越该先点。
+// 跟导航顺序（CATEGORIES，地基排第一）是同一份数据的两种表示，故意不统一
+// ——见 CLAUDE.md「导航顺序 vs 依赖可视化」。
 const territoryStack = [
-  { cards: [industryImpact] },
-  { cards: [aiResearch, aiPractice] },
-  { cards: [aiCore] },
-  { cards: [computingFoundations], foundation: true },
+  { cards: [industryImpact], width: 420 },
+  { cards: [aiResearch, aiPractice], width: 560 },
+  { cards: [aiCore], width: 640 },
+  { cards: [computingFoundations], foundation: true, width: 720 },
 ];
 
 const doors = [
   {
     icon: "🗺️",
     label: "Learn",
-    desc: "我要系统学 → Start Here，60-90 分钟建立最小地图",
+    desc: "我要系统学 → Start Here，30 分钟建立最小地图",
     href: "/start-here",
     sublinks: [{ label: "Start Here", href: "/start-here" }],
   },
@@ -83,11 +84,14 @@ const doors = [
     }
   </div>
 
-  <div id="structure" class="section-label">结构（知识领土，按依赖排序——地基在下）</div>
+  <div id="structure" class="section-label">结构（知识领土，按依赖排序——地基最宽、在下，先点它）</div>
   <div class="territory-stack">
     {
       territoryStack.map((row) => (
-        <div class={`territory-row ${row.cards.length === 1 ? "single" : ""}`}>
+        <div
+          class={`territory-row ${row.cards.length === 1 ? "single" : ""}`}
+          style={`max-width:${row.width}px`}
+        >
           {row.cards.map((c) => (
             <a class={`territory-card ${row.foundation ? "foundation" : ""}`} href={`/docs/${c.key}/`}>
               <div class="card-icon">{c.icon}</div>
@@ -102,7 +106,7 @@ const doors = [
     }
   </div>
   <p class="territory-stack-caption">
-    Computing Foundations 是地基（AI Core 依赖它）；导航栏里它排第一项，这里的堆叠图里它在最底 —— 两种排法各说一件事。
+    Computing Foundations 是地基（AI Core 依赖它）——最宽的那一条，导航栏里它也排第一项。
   </p>
 
   <div class="updates-table">
