@@ -4,17 +4,47 @@ import { CATEGORIES, getChangelogLatest } from "../lib/content";
 
 const latest = getChangelogLatest();
 
-const extraCards = [
-  { key: "mental-models", label: "心智模型", icon: "🧠", description: "我对 AI 的理解是怎么变化的", href: "/mental-models" },
-  { key: "concepts", label: "全部概念索引", icon: "📖", description: "按字母/主题找到所有知识节点", href: "/index-all-concepts" },
-  { key: "glossary", label: "术语表", icon: "🔤", description: "不懂一个词，10 秒钟看懂", href: "/glossary" },
+const byKey = (key: string) => CATEGORIES.find((c) => c.key === key)!;
+const computingFoundations = byKey("computing-foundations");
+const aiCore = byKey("ai-core");
+const aiPractice = byKey("ai-application");
+const aiResearch = byKey("ai-research");
+const industryImpact = byKey("career-impact");
+
+// 依赖排序的领土堆叠：前沿在上，地基在下。跟导航顺序（CATEGORIES，地基排第一）
+// 是同一份数据的两种表示，故意不统一——见 CLAUDE.md「导航顺序 vs 依赖可视化」。
+const territoryStack = [
+  { cards: [industryImpact] },
+  { cards: [aiResearch, aiPractice] },
+  { cards: [aiCore] },
+  { cards: [computingFoundations], foundation: true },
 ];
 
-const entryChoices = [
-  { icon: "🗺️", label: "我完全没背景", desc: "New to AI? 从 Start Here 开始，60-90 分钟建立最小地图", href: "/start-here" },
-  { icon: "🧭", label: "我已经懂基础了", desc: "直接去下面的分类里探索", href: "#structure" },
-  { icon: "🧠", label: "我想看想法怎么连起来的", desc: "看心智模型变迁史", href: "/mental-models" },
-  { icon: "🔤", label: "我卡在一个词上", desc: "去术语表一句话查一下", href: "/glossary" },
+const doors = [
+  {
+    icon: "🗺️",
+    label: "Learn",
+    desc: "我要系统学 → Start Here，60-90 分钟建立最小地图",
+    href: "/start-here",
+    sublinks: [{ label: "Start Here", href: "/start-here" }],
+  },
+  {
+    icon: "🔤",
+    label: "Look Up",
+    desc: "我卡在一个词上 → 查一下",
+    href: "/glossary",
+    sublinks: [
+      { label: "术语表", href: "/glossary" },
+      { label: "全部概念索引", href: "/index-all-concepts" },
+    ],
+  },
+  {
+    icon: "🧠",
+    label: "Explore",
+    desc: "我想看想法怎么连起来的 → 心智模型变迁史",
+    href: "/mental-models",
+    sublinks: [{ label: "Mental Models", href: "/mental-models" }],
+  },
 ];
 ---
 
@@ -31,40 +61,49 @@ const entryChoices = [
     </p>
   </div>
 
-  <div class="section-label">怎么开始</div>
-  <div class="card-grid">
+  <div class="section-label">怎么进来</div>
+  <div class="doors-grid">
     {
-      entryChoices.map((c) => (
-        <a class="card" href={c.href}>
-          <div class="card-icon">{c.icon}</div>
-          <h3>{c.label}</h3>
-          <p>{c.desc}</p>
-        </a>
+      doors.map((d) => (
+        <div class="door-card">
+          <a class="door-card-link" href={d.href}>
+            <div class="card-icon">{d.icon}</div>
+            <h3>{d.label}</h3>
+            <p>{d.desc}</p>
+          </a>
+          {d.sublinks.length > 1 && (
+            <div class="door-sublinks">
+              {d.sublinks.map((s) => (
+                <a href={s.href}>{s.label} →</a>
+              ))}
+            </div>
+          )}
+        </div>
       ))
     }
   </div>
 
-  <div id="structure" class="section-label">结构（按主题探索）</div>
-  <div class="card-grid">
+  <div id="structure" class="section-label">结构（知识领土，按依赖排序——地基在下）</div>
+  <div class="territory-stack">
     {
-      CATEGORIES.map((c) => (
-        <a class="card" href={`/docs/${c.key}/`}>
-          <div class="card-icon">{c.icon}</div>
-          <h3>{c.label}</h3>
-          <p>{c.description}</p>
-        </a>
-      ))
-    }
-    {
-      extraCards.map((c) => (
-        <a class="card accent" href={c.href}>
-          <div class="card-icon">{c.icon}</div>
-          <h3>{c.label}</h3>
-          <p>{c.description}</p>
-        </a>
+      territoryStack.map((row) => (
+        <div class={`territory-row ${row.cards.length === 1 ? "single" : ""}`}>
+          {row.cards.map((c) => (
+            <a class={`territory-card ${row.foundation ? "foundation" : ""}`} href={`/docs/${c.key}/`}>
+              <div class="card-icon">{c.icon}</div>
+              <div>
+                <h3>{c.label}</h3>
+                <p>{c.description}</p>
+              </div>
+            </a>
+          ))}
+        </div>
       ))
     }
   </div>
+  <p class="territory-stack-caption">
+    Computing Foundations 是地基（AI Core 依赖它）；导航栏里它排第一项，这里的堆叠图里它在最底 —— 两种排法各说一件事。
+  </p>
 
   <div class="updates-table">
     <div class="section-label" style="margin-top:0">最新更新</div>

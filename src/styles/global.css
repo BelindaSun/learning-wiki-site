@@ -205,6 +205,138 @@ a:hover {
   font-weight: 600;
 }
 
+/* Dependency-ordered territory stack (homepage "结构" section):
+   foundation at the bottom, frontier at the top — visualizes the
+   knowledge graph, independent of the nav order (foundation first). */
+.territory-stack {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.territory-row {
+  display: flex;
+  gap: 10px;
+}
+
+.territory-row.single {
+  display: block;
+}
+
+.territory-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 22px;
+  color: var(--text);
+}
+
+.territory-card:hover {
+  background: var(--bg-card-active);
+  text-decoration: none;
+}
+
+.territory-card .card-icon {
+  font-size: 1.3rem;
+}
+
+.territory-card h3 {
+  font-family: var(--font-serif);
+  margin: 0 0 2px;
+  font-size: 1.05rem;
+}
+
+.territory-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.territory-card.foundation {
+  background: var(--bg-card-active);
+  border-color: var(--accent);
+}
+
+.territory-stack-caption {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin: 14px 0 0;
+}
+
+@media (max-width: 700px) {
+  .territory-row {
+    flex-direction: column;
+  }
+}
+
+.doors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+@media (max-width: 800px) {
+  .doors-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.door-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  color: var(--text);
+}
+
+.door-card:hover {
+  background: var(--bg-card-active);
+}
+
+.door-card-link {
+  display: block;
+  color: var(--text);
+}
+
+.door-card-link:hover {
+  text-decoration: none;
+}
+
+.door-card .card-icon {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.door-card h3 {
+  font-family: var(--font-serif);
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+
+.door-card p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.door-card .door-sublinks {
+  display: flex;
+  gap: 14px;
+  font-size: 0.85rem;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
 .updates-table {
   max-width: 800px;
   margin: 24px auto 0;

@@ -41,11 +41,14 @@ export interface CategoryMeta {
   description: string;
 }
 
+// 顺序 = 导航顺序 = 依赖顺序（Computing Foundations 是地基，排第一）。
+// 首页的依赖堆叠图会把这个顺序反过来画（地基在底），见 index.astro。
 export const CATEGORIES: CategoryMeta[] = [
+  { key: "computing-foundations", label: "Computing Foundations", icon: "🖥️", description: "计算基础：软件 / 硬件 / 基础设施 / 半导体——AI 的地基层" },
   { key: "ai-core", label: "AI Core", icon: "📚", description: "Agent 系统架构 · 大语言模型基础 · Prompt 工程 · 系统设计" },
-  { key: "ai-application", label: "AI 应用", icon: "🛠️", description: "Skill 设计与实现 · 工作流设计模式 · MCP 与集成 · 真实案例" },
-  { key: "career-impact", label: "职业与影响", icon: "💼", description: "AI 对职业的冲击 · 个人能力建设 · 未来趋势" },
-  { key: "ai-research", label: "AI 研究", icon: "🔬", description: "AI 模型的优化和评估方法" },
+  { key: "ai-application", label: "AI in Practice", icon: "🛠️", description: "Skill 设计与实现 · 工作流设计模式 · MCP 与集成 · 真实案例" },
+  { key: "ai-research", label: "AI Research", icon: "🔬", description: "AI 模型的优化和评估方法" },
+  { key: "career-impact", label: "Industry & Impact", icon: "🌍", description: "AI 遇上世界：职业冲击 · 个人能力建设 · 未来趋势" },
 ];
 
 function slugForFile(repoRelativePath: string): string {
