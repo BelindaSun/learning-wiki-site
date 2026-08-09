@@ -122,13 +122,19 @@ const inlineProcessor = unified()
   .use(remarkParse)
   .use(remarkGfm)
   .use(remarkCjkFriendly)
+  .use(rewriteLinks)
   .use(remarkRehype, { allowDangerousHtml: false })
   .use(rehypeStringify);
 
 /** Renders a short one-paragraph markdown snippet (e.g. the "**核心概念**: ..."
- * line) to inline HTML, stripping the wrapping <p> tag. */
-function renderInline(text: string): string {
-  const html = String(inlineProcessor.processSync(text));
+ * line) to inline HTML, stripping the wrapping <p> tag. Links are resolved
+ * relative to `dir` just like the main article body -- without this, a
+ * markdown link inside the highlight line silently stays as a raw relative
+ * path in the rendered HTML instead of becoming a site route. */
+function renderInline(text: string, dir: string): string {
+  const tree = inlineProcessor.parse(text);
+  const hastTree = inlineProcessor.runSync(tree, { data: { dir } } as any);
+  const html = inlineProcessor.stringify(hastTree as any);
   return html.replace(/^<p>/, "").replace(/<\/p>\n?$/, "");
 }
 
@@ -172,7 +178,7 @@ function parseDoc(repoRelativePath: string): WikiDoc {
     if (lines[i].trim() !== "" && !lines[i].startsWith(">")) break;
   }
 
-  const highlightHtml = highlight ? renderInline(highlight) : null;
+  const highlightHtml = highlight ? renderInline(highlight, normDir) : null;
 
   let updatedLine: string | null = null;
   const updatedMatch = raw.match(/\*\*最后更新\*\*[：:]\s*(.+)/);
