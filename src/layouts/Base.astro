@@ -6,6 +6,13 @@ interface Props {
 }
 
 const { title } = Astro.props;
+
+const pageUrl = `https://learning-wiki-site.vercel.app${Astro.url.pathname}`;
+const issueTitle = `反馈: ${title}`;
+const issueBody = `页面: ${pageUrl}\n\n请描述你发现的问题或建议：\n`;
+const feedbackUrl = `https://github.com/BelindaSun/learning-wiki/issues/new?title=${encodeURIComponent(
+  issueTitle,
+)}&body=${encodeURIComponent(issueBody)}`;
 ---
 
 <!doctype html>
@@ -31,6 +38,9 @@ const { title } = Astro.props;
     </header>
     <slot />
     <footer class="site-footer">
+      <p>
+        <a class="feedback-link" href={feedbackUrl} target="_blank" rel="noopener">📝 反馈 / Report an issue</a>
+      </p>
       <p>learning-wiki is maintained by BelindaSun · Deployed with Astro + Vercel</p>
     </footer>
     <script>
