@@ -1,13 +1,13 @@
 :root {
-  --bg: #faf6ee;
-  --bg-card: #f6ede0;
-  --bg-card-active: #f3dfc4;
-  --text: #2a2420;
-  --text-muted: #6b6259;
-  --accent: #c17a2e;
-  --accent-strong: #a8631e;
-  --border: #e8ddc9;
-  --code-bg: #f1e9da;
+  --bg: #faf8f3;
+  --bg-card: #f5f0e8;
+  --bg-card-active: #ece2d4;
+  --text: #3d2a5c;
+  --text-muted: #7a5fa0;
+  --accent: #a8752f;
+  --accent-strong: #854f0b;
+  --border: rgba(61, 42, 92, 0.16);
+  --code-bg: #f0eae0;
   --font-serif: "Iowan Old Style", "Palatino Linotype", Georgia, "Songti SC", serif;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
   --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
