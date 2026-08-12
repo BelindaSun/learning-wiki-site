@@ -26,11 +26,6 @@ const doors = [
   },
 ];
 
-// 标题/描述/编号字号随行数递减，对应结构区块的依赖深度——地基（01）最大，越往下越小。
-const titleSizes = [36, 31, 25, 25, 25];
-const descSizes = [16, 15.5, 15, 15, 15];
-const numSizes = [15, 15, 14, 14, 14];
-const numWidths = [24, 24, 20, 20, 20];
 ---
 
 <Base title="首页">
@@ -88,16 +83,10 @@ const numWidths = [24, 24, 20, 20, 20];
         {
           CATEGORIES.map((c, i) => (
             <a class="territory-row" href={`/docs/${c.key}/`} style={`margin-left:${i * 30}px`}>
-              <span class="t-num" style={`font-size:${numSizes[i]}px;width:${numWidths[i]}px`}>
-                {String(i + 1).padStart(2, "0")}
-              </span>
+              <span class="t-num">{String(i + 1).padStart(2, "0")}</span>
               <span>
-                <span class="t-title" style={`font-size:${titleSizes[i]}px`}>
-                  {c.label}
-                </span>
-                <span class="t-desc" style={`font-size:${descSizes[i]}px`}>
-                  {c.description}
-                </span>
+                <span class="t-title">{c.label}</span>
+                <span class="t-desc">{c.description}</span>
               </span>
             </a>
           ))
@@ -274,18 +263,22 @@ const numWidths = [24, 24, 20, 20, 20];
   }
 
   .t-num {
+    font-size: 15px;
+    width: 24px;
     color: var(--accent-strong);
     flex-shrink: 0;
   }
 
   .t-title {
     display: block;
+    font-size: 30px;
     font-weight: 600;
     letter-spacing: -0.01em;
   }
 
   .t-desc {
     display: block;
+    font-size: 15.5px;
     color: color-mix(in srgb, var(--text) 65%, transparent);
     margin-top: 2px;
   }
