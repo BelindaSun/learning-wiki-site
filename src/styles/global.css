@@ -16,6 +16,71 @@
   --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
 }
 
+/* Reader-selected theme presets, applied via [data-theme] on <html>.
+   Each overrides the full color set so contrast stays deliberate — see
+   Base.astro's settings panel for how these get set/persisted. */
+:root[data-theme="sepia"] {
+  --bg: #f4ecd8;
+  --bg-card: #ede2c9;
+  --bg-card-active: #e3d4b0;
+  --text: #3a2f1f;
+  --text-muted: #7a6b52;
+  --border: #ddd0af;
+  --code-bg: #ece0c4;
+}
+
+:root[data-theme="dark"] {
+  --bg: #1a1918;
+  --bg-card: #252321;
+  --bg-card-active: #302d29;
+  --text: #e8e4dc;
+  --text-muted: #a39d90;
+  --accent: #29a8d1;
+  --accent-hover: #4bb8dc;
+  --accent-strong: #5fc2e0;
+  --link: #7fb0e8;
+  --border: #3a3733;
+  --code-bg: #232120;
+}
+
+:root[data-theme="contrast"] {
+  --bg: #ffffff;
+  --bg-card: #efefef;
+  --bg-card-active: #dedede;
+  --text: #000000;
+  --text-muted: #333333;
+  --accent: #005f7a;
+  --accent-hover: #004a5e;
+  --accent-strong: #004a5e;
+  --link: #0000cc;
+  --border: #666666;
+  --code-bg: #eeeeee;
+}
+
+/* Reader font override, applied via [data-font] on <html> — leaves code
+   blocks alone so they stay monospace regardless of the reader's choice. */
+:root[data-font="serif"] :not(code):not(pre) {
+  font-family: var(--font-serif) !important;
+}
+
+:root[data-font="sans"] :not(code):not(pre) {
+  font-family: var(--font-sans) !important;
+}
+
+/* Reader font-size override, applied via [data-size] on <html> — every
+   size in this stylesheet is in rem, so this scales the whole page. */
+:root[data-size="small"] {
+  font-size: 14px;
+}
+
+:root[data-size="large"] {
+  font-size: 18px;
+}
+
+:root[data-size="xlarge"] {
+  font-size: 20px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -103,6 +168,139 @@ a:hover {
 }
 
 .site-header nav a:hover {
+  color: var(--link);
+}
+
+.settings-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.settings-btn:hover {
+  color: var(--link);
+  border-color: var(--link);
+}
+
+.settings-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 24px;
+  width: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.settings-group {
+  margin-bottom: 18px;
+}
+
+.settings-group:last-of-type {
+  margin-bottom: 14px;
+}
+
+.settings-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.theme-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.theme-card.active {
+  border-color: var(--link);
+}
+
+.theme-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.theme-swatch-default {
+  background: #faf8f3;
+}
+
+.theme-swatch-sepia {
+  background: #f4ecd8;
+}
+
+.theme-swatch-dark {
+  background: #1a1918;
+}
+
+.theme-swatch-contrast {
+  background: #ffffff;
+  border-color: #000;
+}
+
+.option-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.option-btn {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.option-btn.active {
+  background: var(--link);
+  border-color: var(--link);
+  color: var(--bg-card);
+}
+
+.settings-reset {
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.settings-reset:hover {
   color: var(--link);
 }
 
