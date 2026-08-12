@@ -2,12 +2,14 @@
   --bg: #faf8f3;
   --bg-card: #f5f0e8;
   --bg-card-active: #ece2d4;
-  --text: #232323;
-  --text-muted: #686662;
-  --accent: #3b6ea5;
-  --accent-strong: #1d4e89;
+  --text: #201e1d;
+  --text-muted: #6b6864;
+  --accent: #0088b0;
+  --accent-hover: #1186ac;
+  --accent-strong: #006786;
   --border: #e3ddd0;
   --code-bg: #f0eae0;
+  --header-h: 76px;
   --font-serif: "Iowan Old Style", "Palatino Linotype", Georgia, "Songti SC", serif;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
   --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
@@ -41,26 +43,65 @@ a:hover {
 }
 
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px 24px;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
 }
 
 .site-header .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+
+.brand-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--text);
+  border-radius: 50%;
+  font-family: var(--font-serif);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: var(--accent-strong);
+  flex-shrink: 0;
+}
+
+.brand-name {
   font-family: var(--font-serif);
   font-weight: 600;
   font-size: 1.05rem;
-  color: var(--text);
 }
 
 .site-header nav {
   display: flex;
-  gap: 28px;
-  font-size: 0.92rem;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 0.9rem;
+}
+
+.site-header nav a {
+  color: var(--text);
+}
+
+.site-header nav a.muted {
+  color: var(--text-muted);
+}
+
+.site-header nav a:hover {
   color: var(--accent-strong);
 }
 
@@ -99,20 +140,6 @@ a:hover {
   margin: 0 auto 20px;
   color: var(--text-muted);
   font-size: 1.05rem;
-}
-
-.hero blockquote {
-  font-style: italic;
-  color: var(--accent-strong);
-  border: none;
-  margin: 0;
-}
-
-.section-label {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  margin: 48px 0 20px;
 }
 
 .card-grid {
@@ -190,192 +217,21 @@ a:hover {
   font-weight: 600;
 }
 
-/* Dependency-ordered territory stack (homepage "结构" section):
-   foundation at the bottom, frontier at the top — visualizes the
-   knowledge graph, independent of the nav order (foundation first).
-   Each row's max-width is set inline (widest at the bottom), and
-   width:100% + margin:auto here center it into an inverted pyramid. */
-.territory-stack {
-  max-width: 760px;
+.site-footer {
+  max-width: 1180px;
   margin: 0 auto;
+  padding: 40px clamp(24px, 5vw, 72px) 30px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.territory-row {
-  display: flex;
-  gap: 10px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-.territory-row.single {
-  display: block;
-}
-
-@media (max-width: 700px) {
-  .territory-row {
-    max-width: 100% !important;
-  }
-}
-
-.territory-card {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 22px;
-  color: var(--text);
-}
-
-.territory-card:hover {
-  background: var(--bg-card-active);
-  text-decoration: none;
-}
-
-.territory-card .card-icon {
-  font-size: 1.3rem;
-}
-
-.territory-card h3 {
-  font-family: var(--font-serif);
-  margin: 0 0 2px;
-  font-size: 1.05rem;
-}
-
-.territory-card p {
-  margin: 0;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.territory-card.foundation {
-  background: var(--bg-card-active);
-  border-color: var(--accent);
-}
-
-.territory-stack-caption {
-  text-align: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
   color: var(--text-muted);
   font-size: 0.8rem;
-  margin: 14px 0 0;
-}
-
-@media (max-width: 700px) {
-  .territory-row {
-    flex-direction: column;
-  }
-}
-
-.doors-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-@media (max-width: 800px) {
-  .doors-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.door-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 22px 24px;
-  color: var(--text);
-}
-
-.door-card:hover {
-  background: var(--bg-card-active);
-}
-
-.door-card-link {
-  display: block;
-  color: var(--text);
-}
-
-.door-card-link:hover {
-  text-decoration: none;
-}
-
-.door-card .card-icon {
-  font-size: 1.4rem;
-  margin-bottom: 10px;
-}
-
-.door-card h3 {
-  font-family: var(--font-serif);
-  margin: 0 0 8px;
-  font-size: 1.15rem;
-}
-
-.door-card p {
-  margin: 0;
-  font-size: 0.88rem;
-  color: var(--text-muted);
-}
-
-.door-card .door-sublinks {
-  display: flex;
-  gap: 14px;
-  font-size: 0.85rem;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-}
-
-.updates-table {
-  max-width: 800px;
-  margin: 24px auto 0;
-}
-
-.update-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: var(--bg-card);
-  border-radius: 10px;
-  padding: 14px 20px;
-}
-
-.update-row .badge {
-  margin-left: auto;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 0.78rem;
-}
-
-.site-footer {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  padding: 60px 24px 40px;
 }
 
 .feedback-link {
-  display: inline-block;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 6px 16px;
-  margin-bottom: 12px;
-  color: var(--accent-strong);
-  font-size: 0.82rem;
-}
-
-.feedback-link:hover {
-  background: var(--bg-card);
-  text-decoration: none;
+  color: inherit;
+  text-decoration: underline;
 }
 
 /* Article layout */
@@ -508,7 +364,7 @@ a:hover {
 
 .article-toc {
   position: sticky;
-  top: 40px;
+  top: calc(var(--header-h) + 24px);
   font-size: 0.85rem;
 }
 

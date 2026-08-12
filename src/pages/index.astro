@@ -4,120 +4,328 @@ import { CATEGORIES, getChangelogLatest } from "../lib/content";
 
 const latest = getChangelogLatest();
 
-const byKey = (key: string) => CATEGORIES.find((c) => c.key === key)!;
-const computingFoundations = byKey("computing-foundations");
-const aiCore = byKey("ai-core");
-const aiPractice = byKey("ai-application");
-const aiResearch = byKey("ai-research");
-const industryImpact = byKey("career-impact");
-
-// 依赖排序的领土堆叠：前沿在上、窄；地基在下、宽——倒三角形，越宽越该先点。
-// 跟导航顺序（CATEGORIES，地基排第一）是同一份数据的两种表示，故意不统一
-// ——见 CLAUDE.md「导航顺序 vs 依赖可视化」。
-const territoryStack = [
-  { cards: [industryImpact], width: 420 },
-  { cards: [aiResearch, aiPractice], width: 560 },
-  { cards: [aiCore], width: 640 },
-  { cards: [computingFoundations], foundation: true, width: 720 },
-];
-
 const doors = [
   {
-    icon: "🗺️",
     label: "Learn",
-    desc: "我要系统学 → Start Here，30 分钟建立最小地图",
     href: "/start-here",
-    sublinks: [{ label: "Start Here", href: "/start-here" }],
+    caption: "我要系统学 → Start Here，30 分钟建立最小地图",
   },
   {
-    icon: "🔤",
     label: "Look Up",
-    desc: "我卡在一个词上 → 查一下",
     href: "/glossary",
+    captionPrefix: "我卡在一个词上 → 查一下：",
     sublinks: [
       { label: "术语表", href: "/glossary" },
       { label: "全部概念索引", href: "/index-all-concepts" },
     ],
   },
   {
-    icon: "🧠",
     label: "Explore",
-    desc: "我想看想法怎么连起来的 → 心智模型变迁史",
     href: "/mental-models",
-    sublinks: [{ label: "Mental Models", href: "/mental-models" }],
+    caption: "我想看想法怎么连起来的 → 心智模型变迁史",
   },
 ];
+
+// 标题/描述/编号字号随行数递减，对应结构区块的依赖深度——地基（01）最大，越往下越小。
+const titleSizes = [36, 31, 25, 25, 25];
+const descSizes = [16, 15.5, 15, 15, 15];
+const numSizes = [15, 15, 14, 14, 14];
+const numWidths = [24, 24, 20, 20, 20];
 ---
 
 <Base title="首页">
-  <div class="hero">
-    <div class="eyebrow">个人学习知识库</div>
-    <h1>AI & Beyond</h1>
-    <p>
-      一个持续增长的个人学习知识库。主要记录 AI 学习，兼收其他感兴趣的话题。每天在这里添加新的学习内容——来自对话、论文、实验、思考。
-    </p>
-    <blockquote>"The best way to learn is to teach. The best way to remember is to write."</blockquote>
-  </div>
+  <div class="home">
+    <section class="hero-section">
+      <span class="eyebrow">个人学习知识库</span>
+      <h1>AI &amp; Beyond</h1>
+      <p class="hero-body">
+        一个持续增长的个人学习知识库。主要记录 AI 学习，兼收其他感兴趣的话题。<br />
+        每天在这里添加新的学习内容——来自对话、论文、实验、思考。
+      </p>
+      <blockquote class="hero-quote">
+        "The best way to learn is to teach.<br />The best way to remember is to write."
+      </blockquote>
+    </section>
 
-  <div class="section-label">怎么进来</div>
-  <div class="doors-grid">
-    {
-      doors.map((d) => (
-        <div class="door-card">
-          <a class="door-card-link" href={d.href}>
-            <div class="card-icon">{d.icon}</div>
-            <h3>{d.label}</h3>
-            <p>{d.desc}</p>
-          </a>
-          {d.sublinks.length > 1 && (
-            <div class="door-sublinks">
-              {d.sublinks.map((s) => (
-                <a href={s.href}>{s.label} →</a>
-              ))}
+    <div class="masthead-rule"></div>
+
+    <section class="entry-section">
+      <span class="eyebrow">怎么进来</span>
+      <div class="entry-grid">
+        {
+          doors.map((d) => (
+            <div class="entry-item">
+              <a class="btn-primary" href={d.href}>
+                {d.label}
+              </a>
+              <p class="entry-caption">
+                {d.sublinks ? (
+                  <>
+                    {d.captionPrefix}
+                    {d.sublinks.map((s, i) => (
+                      <>
+                        {i > 0 && " · "}
+                        <a href={s.href}>{s.label}</a>
+                      </>
+                    ))}
+                  </>
+                ) : (
+                  d.caption
+                )}
+              </p>
             </div>
-          )}
-        </div>
-      ))
-    }
-  </div>
+          ))
+        }
+      </div>
+    </section>
 
-  <div id="structure" class="section-label">结构（知识领土，按依赖排序——地基最宽、在下，先点它）</div>
-  <div class="territory-stack">
-    {
-      territoryStack.map((row) => (
-        <div
-          class={`territory-row ${row.cards.length === 1 ? "single" : ""}`}
-          style={`max-width:${row.width}px`}
-        >
-          {row.cards.map((c) => (
-            <a class={`territory-card ${row.foundation ? "foundation" : ""}`} href={`/docs/${c.key}/`}>
-              <div class="card-icon">{c.icon}</div>
-              <div>
-                <h3>{c.label}</h3>
-                <p>{c.description}</p>
-              </div>
+    <section class="structure-section">
+      <div class="section-eyebrow-inline">
+        <span class="eyebrow">结构</span>
+        <span class="structure-desc">知识领土，按依赖排序——地基最宽、最先点；越往下越面向应用。</span>
+      </div>
+      <div class="territory-list">
+        {
+          CATEGORIES.map((c, i) => (
+            <a class="territory-row" href={`/docs/${c.key}/`} style={`margin-left:${i * 30}px`}>
+              <span class="t-num" style={`font-size:${numSizes[i]}px;width:${numWidths[i]}px`}>
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span>
+                <span class="t-title" style={`font-size:${titleSizes[i]}px`}>
+                  {c.label}
+                </span>
+                <span class="t-desc" style={`font-size:${descSizes[i]}px`}>
+                  {c.description}
+                </span>
+              </span>
             </a>
-          ))}
-        </div>
-      ))
-    }
-  </div>
-  <p class="territory-stack-caption">
-    Computing Foundations 是地基（AI Core 依赖它）——最宽的那一条，导航栏里它也排第一项。
-  </p>
+          ))
+        }
+      </div>
+    </section>
 
-  <div class="updates-table">
-    <div class="section-label" style="margin-top:0">最新更新</div>
     {
       latest && (
-        <div class="update-row">
-          <span>{latest.date}</span>
-          <span>{latest.topic}</span>
-          <a class="badge" href="/CHANGELOG">
+        <section class="updates-section">
+          <span class="eyebrow">最新更新</span>
+          <div class="updates-row">
+            <span class="updates-date">{latest.date}</span>
+            <span class="updates-topic">{latest.topic}</span>
+          </div>
+          <a class="updates-link" href="/CHANGELOG">
             查看完整日志 →
           </a>
-        </div>
+        </section>
       )
     }
   </div>
 </Base>
+
+<style>
+  .home {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(24px, 5vw, 72px);
+    font-family: var(--font-serif);
+  }
+
+  .eyebrow {
+    display: block;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--text) 60%, transparent);
+  }
+
+  .hero-section {
+    padding: 88px 0 40px;
+  }
+
+  .hero-section .eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .hero-section h1 {
+    font-weight: 600;
+    font-size: clamp(52px, 7vw, 88px);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px;
+  }
+
+  .hero-body {
+    font-size: 1.125rem;
+    line-height: 1.65;
+    max-width: 640px;
+    color: color-mix(in srgb, var(--text) 82%, transparent);
+    margin: 0 0 20px;
+  }
+
+  .hero-quote {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.19rem;
+    line-height: 1.5;
+    max-width: 520px;
+    margin: 0;
+    color: color-mix(in srgb, var(--text) 70%, transparent);
+    text-indent: -0.5em;
+  }
+
+  .masthead-rule {
+    height: 5px;
+    border-top: 3px solid var(--accent-strong);
+    border-bottom: 1px solid var(--accent-strong);
+  }
+
+  .entry-section,
+  .structure-section,
+  .updates-section {
+    padding: 40px 0;
+  }
+
+  .entry-section .eyebrow {
+    margin-bottom: 20px;
+  }
+
+  .entry-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .entry-item {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    justify-content: center;
+    padding: 14px 28px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 1.06rem;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    text-decoration: none;
+  }
+
+  .btn-primary:active {
+    background: var(--accent-strong);
+  }
+
+  .entry-caption {
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--text) 60%, transparent);
+    margin: 0;
+  }
+
+  .entry-caption a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  .entry-caption a:hover {
+    color: var(--accent-strong);
+  }
+
+  .section-eyebrow-inline {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+
+  .section-eyebrow-inline .eyebrow {
+    display: inline;
+  }
+
+  .structure-desc {
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--text) 60%, transparent);
+  }
+
+  .territory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .territory-row {
+    display: flex;
+    gap: 20px;
+    align-items: baseline;
+    color: inherit;
+  }
+
+  .territory-row:hover {
+    color: var(--accent-strong);
+    text-decoration: none;
+  }
+
+  .t-num {
+    color: var(--accent-strong);
+    flex-shrink: 0;
+  }
+
+  .t-title {
+    display: block;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .t-desc {
+    display: block;
+    color: color-mix(in srgb, var(--text) 65%, transparent);
+    margin-top: 2px;
+  }
+
+  .updates-section .eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .updates-row {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .updates-date {
+    font-size: 0.875rem;
+    color: color-mix(in srgb, var(--text) 55%, transparent);
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .updates-topic {
+    font-size: 1rem;
+  }
+
+  .updates-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.875rem;
+    color: var(--accent-strong);
+  }
+
+  .updates-link:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 700px) {
+    .territory-row {
+      margin-left: 0 !important;
+    }
+  }
+</style>
