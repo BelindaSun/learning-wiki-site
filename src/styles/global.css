@@ -239,11 +239,17 @@ a:hover {
 .article-page {
   display: grid;
   grid-template-columns: minmax(0, 760px) 220px;
-  gap: 48px;
-  max-width: 1040px;
+  justify-content: space-between;
+  max-width: 1180px;
   margin: 40px auto 100px;
   padding: 0 24px;
   align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .article-page {
+    max-width: 1040px;
+  }
 }
 
 @media (max-width: 900px) {
