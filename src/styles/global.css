@@ -7,6 +7,7 @@
   --accent: #0088b0;
   --accent-hover: #1186ac;
   --accent-strong: #006786;
+  --link: #1d4e89;
   --border: #e3ddd0;
   --code-bg: #f0eae0;
   --header-h: 76px;
@@ -34,7 +35,7 @@ body {
 }
 
 a {
-  color: var(--accent-strong);
+  color: var(--link);
   text-decoration: none;
 }
 
@@ -102,7 +103,7 @@ a:hover {
 }
 
 .site-header nav a:hover {
-  color: var(--accent-strong);
+  color: var(--link);
 }
 
 .container {
@@ -264,7 +265,7 @@ a:hover {
 }
 
 .back-nav a:hover {
-  color: var(--accent-strong);
+  color: var(--link);
 }
 
 .breadcrumb {
@@ -290,7 +291,7 @@ a:hover {
 }
 
 .article-highlight {
-  background: var(--bg-card-active);
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg));
   border-radius: 10px;
   padding: 16px 20px;
   margin: 20px 0 32px;
@@ -393,7 +394,7 @@ a:hover {
 }
 
 .article-toc a:hover {
-  color: var(--accent-strong);
+  color: var(--link);
   border-left-color: var(--accent);
   text-decoration: none;
 }
