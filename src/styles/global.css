@@ -431,6 +431,139 @@ a:hover {
 .feedback-link {
   color: inherit;
   text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* Feedback modal */
+.feedback-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.feedback-modal[hidden] {
+  display: none;
+}
+
+.feedback-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.feedback-dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+}
+
+.feedback-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.feedback-heading {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+}
+
+.feedback-field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.feedback-field > span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.feedback-field input,
+.feedback-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.feedback-field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.feedback-field input:focus,
+.feedback-field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.feedback-botcheck {
+  display: none !important;
+}
+
+.feedback-submit {
+  width: 100%;
+  margin-top: 2px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px;
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.feedback-submit:hover {
+  background: var(--accent-hover);
+}
+
+.feedback-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.feedback-success {
+  margin: 0;
+  font-size: 1.05rem;
+  text-align: center;
+  padding: 24px 0 8px;
+}
+
+.feedback-error {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+  color: #c0392b;
 }
 
 /* Article layout */

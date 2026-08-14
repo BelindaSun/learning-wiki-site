@@ -10,10 +10,6 @@ const { title } = Astro.props;
 
 const pageUrl = `https://learning-wiki-site.vercel.app${Astro.url.pathname}`;
 const feedbackSubject = `Learning Wiki 反馈: ${title}`;
-const feedbackBody = `页面: ${pageUrl}\n\n请描述你发现的问题或建议：\n`;
-const feedbackUrl = `mailto:sunbelinda1108@gmail.com?subject=${encodeURIComponent(
-  feedbackSubject,
-)}&body=${encodeURIComponent(feedbackBody)}`;
 ---
 
 <!doctype html>
@@ -107,9 +103,37 @@ const feedbackUrl = `mailto:sunbelinda1108@gmail.com?subject=${encodeURIComponen
     </header>
     <slot />
     <footer class="site-footer">
-      <a class="feedback-link" href={feedbackUrl}>反馈 / Feedback</a>
+      <button type="button" id="feedback-btn" class="feedback-link">反馈 / Feedback</button>
       <span>learning-wiki is maintained by BelindaSun · Deployed with Astro + Vercel</span>
     </footer>
+
+    <div id="feedback-modal" class="feedback-modal" hidden>
+      <div class="feedback-backdrop" data-feedback-close></div>
+      <div class="feedback-dialog" role="dialog" aria-modal="true" aria-labelledby="feedback-heading">
+        <button type="button" class="feedback-close" data-feedback-close aria-label="关闭">×</button>
+        <h2 id="feedback-heading" class="feedback-heading">反馈 / Feedback</h2>
+        <form id="feedback-form" class="feedback-form">
+          <input type="hidden" name="access_key" value="727ae9b4-ceb1-4e29-9208-dd32df45593d" />
+          <input type="hidden" name="subject" value={feedbackSubject} />
+          <input type="hidden" name="from_name" value="Learning Wiki 反馈" />
+          <input type="hidden" name="页面" id="feedback-page" value={pageUrl} />
+          <input type="checkbox" name="botcheck" class="feedback-botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <label class="feedback-field">
+            <span>名字（选填）</span>
+            <input type="text" name="名字" autocomplete="name" />
+          </label>
+          <label class="feedback-field">
+            <span>内容</span>
+            <textarea name="内容" rows="4" required placeholder="发现的问题、建议，或者只是想说点什么…"></textarea>
+          </label>
+          <button type="submit" class="feedback-submit">提交</button>
+        </form>
+        <p id="feedback-success" class="feedback-success" hidden>谢谢，已收到 🌿</p>
+        <p id="feedback-error" class="feedback-error" hidden>
+          提交失败了，稍后再试一次，或直接邮件 sunbelinda1108@gmail.com 🙏
+        </p>
+      </div>
+    </div>
     <script>
       // "← 返回上一页" links (data-back): go back in history if we got here
       // from within the site, otherwise fall back to the homepage.
@@ -217,6 +241,70 @@ const feedbackUrl = `mailto:sunbelinda1108@gmail.com?subject=${encodeURIComponen
         localStorage.removeItem("wiki-font");
         localStorage.removeItem("wiki-size");
         syncActiveStates();
+      });
+    </script>
+    <script>
+      // Feedback modal: a small in-page form that submits to Web3Forms via
+      // fetch (no page navigation, reader doesn't enter their email). The
+      // page they're on is sent along so we know which page the note is about.
+      const fbModal = document.getElementById("feedback-modal");
+      const fbForm = document.getElementById("feedback-form");
+      const fbSuccess = document.getElementById("feedback-success");
+      const fbError = document.getElementById("feedback-error");
+      const fbSubmit = fbForm.querySelector(".feedback-submit");
+
+      function openFeedback() {
+        fbSuccess.hidden = true;
+        fbError.hidden = true;
+        fbForm.hidden = false;
+        fbForm.reset();
+        fbModal.hidden = false;
+        const first = fbForm.querySelector('input[name="名字"]');
+        if (first) first.focus();
+      }
+
+      function closeFeedback() {
+        fbModal.hidden = true;
+      }
+
+      document.getElementById("feedback-btn").addEventListener("click", openFeedback);
+      fbModal.querySelectorAll("[data-feedback-close]").forEach((el) => {
+        el.addEventListener("click", closeFeedback);
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !fbModal.hidden) closeFeedback();
+      });
+
+      fbForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        fbError.hidden = true;
+        fbSubmit.disabled = true;
+        fbSubmit.textContent = "提交中…";
+        const pageField = document.getElementById("feedback-page");
+        if (pageField) pageField.value = location.href;
+        const data = Object.fromEntries(new FormData(fbForm).entries());
+        try {
+          const res = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          const result = await res.json();
+          if (result.success) {
+            fbForm.hidden = true;
+            fbSuccess.hidden = false;
+          } else {
+            throw new Error(result.message || "submit failed");
+          }
+        } catch (err) {
+          fbError.hidden = false;
+        } finally {
+          fbSubmit.disabled = false;
+          fbSubmit.textContent = "提交";
+        }
       });
     </script>
   </body>
