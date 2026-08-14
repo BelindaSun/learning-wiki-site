@@ -9,11 +9,11 @@ interface Props {
 const { title } = Astro.props;
 
 const pageUrl = `https://learning-wiki-site.vercel.app${Astro.url.pathname}`;
-const issueTitle = `反馈: ${title}`;
-const issueBody = `页面: ${pageUrl}\n\n请描述你发现的问题或建议：\n`;
-const feedbackUrl = `https://github.com/BelindaSun/learning-wiki/issues/new?title=${encodeURIComponent(
-  issueTitle,
-)}&body=${encodeURIComponent(issueBody)}`;
+const feedbackSubject = `Learning Wiki 反馈: ${title}`;
+const feedbackBody = `页面: ${pageUrl}\n\n请描述你发现的问题或建议：\n`;
+const feedbackUrl = `mailto:sunbelinda1108@gmail.com?subject=${encodeURIComponent(
+  feedbackSubject,
+)}&body=${encodeURIComponent(feedbackBody)}`;
 ---
 
 <!doctype html>
@@ -107,7 +107,7 @@ const feedbackUrl = `https://github.com/BelindaSun/learning-wiki/issues/new?titl
     </header>
     <slot />
     <footer class="site-footer">
-      <a class="feedback-link" href={feedbackUrl} target="_blank" rel="noopener">反馈 / Report an issue</a>
+      <a class="feedback-link" href={feedbackUrl}>反馈 / Feedback</a>
       <span>learning-wiki is maintained by BelindaSun · Deployed with Astro + Vercel</span>
     </footer>
     <script>
