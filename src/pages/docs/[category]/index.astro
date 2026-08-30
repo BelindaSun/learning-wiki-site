@@ -12,12 +12,11 @@ export async function getStaticPaths() {
 
 const { category } = Astro.props;
 
-// computing-foundations has a hand-authored landing page (Start / Orient /
-// Go Deeper) at docs/computing-foundations/index.md. [...slug].astro
-// deliberately excludes /index routes, so without this it never renders
-// anywhere on the site. Render it here instead of the generic flat file
-// list. Other categories are untouched — same generic listing as before.
-const landingDoc = category.key === "computing-foundations" ? getDocBySlug(`docs/${category.key}/index`) : null;
+// A category can replace the generic flat file list with a hand-authored
+// learning map at docs/<category>/index.md (for example, Start / Orient /
+// Go Deeper). [...slug].astro deliberately excludes /index routes, so the
+// category route is responsible for rendering these landing pages.
+const landingDoc = getDocBySlug(`docs/${category.key}/index`);
 const docs = landingDoc ? [] : getDocsInCategory(category.key);
 ---
 
