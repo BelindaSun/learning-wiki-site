@@ -248,8 +248,8 @@ export function getDocsInCategory(categoryKey: string, language: "zh" | "en" = "
     .sort((a, b) => a.title.localeCompare(b.title, "zh"));
 }
 
-export function getChangelogLatest(): { date: string; topic: string } | null {
-  const doc = getDocBySlug("CHANGELOG", "zh");
+export function getChangelogLatest(language: "zh" | "en" = "zh"): { date: string; topic: string } | null {
+  const doc = getDocBySlug("CHANGELOG", language);
   if (!doc) return null;
   // Match the first "## [version] - date" block, then whatever "### " heading
   // comes right after it, regardless of emoji/prefix (Daily Update, 结构调整, etc.)

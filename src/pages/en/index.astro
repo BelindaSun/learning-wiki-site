@@ -1,55 +1,88 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { CATEGORIES } from "../../lib/content";
+import { CATEGORIES, getChangelogLatest } from "../../lib/content";
+
+const latest = getChangelogLatest("en");
+const descriptions: Record<string, string> = {
+  "computing-foundations": "Software · hardware · infrastructure · semiconductors—the ground AI stands on",
+  "ai-core": "Agent architecture · language-model foundations · prompting · system design",
+  "ai-application": "Skills · workflow patterns · MCP and integration · real systems",
+  "ai-research": "How AI models are optimized and evaluated",
+  "career-impact": "AI meets the world: work · organizations · competition · future impact",
+};
 ---
 
 <Base title="Home" lang="en">
   <main class="en-home">
     <section class="en-hero">
-      <span>PERSONAL LEARNING WIKI</span>
+      <span>Personal Learning Wiki</span>
       <h1>AI &amp; Beyond</h1>
       <p>
-        A growing map of what I am learning—mostly about AI, and occasionally
-        about everything around it. Built from conversations, papers,
-        experiments, and changes of mind.
+        A growing personal learning wiki—mostly about AI, with room for everything around it.<br />
+        Built day by day from conversations, papers, experiments, and changes of mind.
       </p>
+      <blockquote>"The best way to learn is to teach.<br />The best way to remember is to write."</blockquote>
     </section>
 
+    <div class="masthead-rule"></div>
+
     <section class="en-doors">
-      <h2>Three ways in</h2>
+      <span class="eyebrow">Three Ways In</span>
       <div>
-        <a href="/en/start-here"><strong>Learn</strong><span>Build the minimum map first</span></a>
-        <a href="/en/glossary"><strong>Look Up</strong><span>Find a term when you get stuck</span></a>
-        <a href="/en/mental-models"><strong>Explore</strong><span>See how ideas changed over time</span></a>
+        <div><a href="/en/start-here"><strong>Learn</strong></a><p>Build the minimum map in 30 minutes</p></div>
+        <div><a href="/en/glossary"><strong>Look Up</strong></a><p>Find a term when you get stuck</p></div>
+        <div><a href="/en/mental-models"><strong>Explore</strong></a><p>See how ideas changed over time</p></div>
       </div>
     </section>
 
     <section id="territories" class="en-territories">
-      <h2>Knowledge territories</h2>
-      <p>Ordered by dependency: foundations first, impact last.</p>
+      <div class="section-heading"><span class="eyebrow">Structure</span><p>Five knowledge territories in dependency order—foundations first, applications later.</p></div>
       {CATEGORIES.map((category, index) => (
-        <a href={`/en/docs/${category.key}/`}>
+        <a href={`/en/docs/${category.key}/`} style={`margin-left:${index * 30}px`}>
           <span>{String(index + 1).padStart(2, "0")}</span>
-          <strong>{category.label}</strong>
+          <span><strong>{category.label}</strong><small>{descriptions[category.key]}</small></span>
         </a>
       ))}
     </section>
+
+    {latest && <section class="en-updates">
+      <span class="eyebrow">Latest Update</span>
+      <div><time>{latest.date}</time><span>{latest.topic}</span></div>
+      <a href="/en/CHANGELOG">View the full changelog →</a>
+    </section>}
   </main>
 </Base>
 
 <style>
-  .en-home { width:min(1040px,calc(100% - 48px)); margin:0 auto 100px; }
-  .en-hero { padding:88px 0 48px; border-bottom:4px double var(--accent-strong); }
-  .en-hero > span { color:var(--text-muted); font-size:.78rem; letter-spacing:.08em; }
-  .en-hero h1 { margin:8px 0 18px; font:600 clamp(3.2rem,8vw,5.5rem)/1 var(--font-serif); }
-  .en-hero p { max-width:680px; font-size:1.08rem; color:var(--text-muted); }
-  .en-doors,.en-territories { padding:40px 0; }
-  .en-doors h2,.en-territories h2 { font-family:var(--font-serif); }
-  .en-doors > div { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
-  .en-doors a { padding:18px; border:1px solid var(--border); border-radius:10px; }
-  .en-doors strong,.en-doors span { display:block; }
-  .en-doors span { color:var(--text-muted); font-size:.86rem; }
-  .en-territories > a { display:flex; gap:18px; padding:18px 0; border-top:1px solid var(--border); font:600 1.35rem var(--font-serif); }
-  .en-territories > a span { color:var(--accent-strong); font:400 .8rem var(--font-sans); }
-  @media(max-width:650px){.en-doors > div{grid-template-columns:1fr}.en-hero{padding-top:48px}}
+  .en-home { max-width:1180px; margin:0 auto; padding:0 clamp(24px,5vw,72px); font-family:var(--font-serif); }
+  .eyebrow,.en-hero > span { display:block; font-size:.8rem; letter-spacing:.08em; text-transform:uppercase; color:color-mix(in srgb,var(--text) 60%,transparent); }
+  .en-hero { padding:88px 0 40px; }
+  .en-hero > span { margin-bottom:12px; }
+  .en-hero h1 { font-weight:600; font-size:clamp(52px,7vw,88px); line-height:1.02; letter-spacing:-.02em; margin:0 0 20px; }
+  .en-hero p { font-size:1.125rem; line-height:1.65; max-width:640px; color:color-mix(in srgb,var(--text) 82%,transparent); margin:0 0 20px; }
+  .en-hero blockquote { font-style:italic; font-weight:400; font-size:1.19rem; line-height:1.5; max-width:520px; margin:0; color:color-mix(in srgb,var(--text) 70%,transparent); text-indent:-.5em; }
+  .masthead-rule { height:5px; border-top:3px solid var(--accent-strong); border-bottom:1px solid var(--accent-strong); }
+  .en-doors,.en-territories,.en-updates { padding:40px 0; }
+  .en-doors > .eyebrow { margin-bottom:20px; }
+  .en-doors > div { display:flex; gap:20px; flex-wrap:wrap; }
+  .en-doors > div > div { width:200px; display:flex; flex-direction:column; gap:10px; }
+  .en-doors a { display:inline-flex; justify-content:center; padding:14px 28px; border-radius:8px; background:var(--accent); color:var(--bg); font-size:1.06rem; font-weight:600; }
+  .en-doors a:hover { background:var(--accent-hover); text-decoration:none; }
+  .en-doors a:active { background:var(--accent-strong); }
+  .en-doors p { font-size:.84rem; line-height:1.5; color:color-mix(in srgb,var(--text) 60%,transparent); margin:0; }
+  .section-heading { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:30px; }
+  .section-heading .eyebrow { display:inline; }
+  .section-heading p { margin:0; font-size:.875rem; color:color-mix(in srgb,var(--text) 60%,transparent); }
+  .en-territories { display:flex; flex-direction:column; gap:30px; }
+  .en-territories .section-heading { margin-bottom:0; }
+  .en-territories > a { display:flex; gap:20px; align-items:baseline; color:inherit; }
+  .en-territories > a:hover { color:var(--link); text-decoration:none; }
+  .en-territories > a > span:first-child { font-size:15px; width:24px; color:var(--accent-strong); flex-shrink:0; }
+  .en-territories strong { display:block; font-size:30px; font-weight:600; letter-spacing:-.01em; }
+  .en-territories small { display:block; font-size:15.5px; color:color-mix(in srgb,var(--text) 65%,transparent); margin-top:2px; }
+  .en-updates > .eyebrow { margin-bottom:12px; }
+  .en-updates > div { display:flex; align-items:baseline; gap:20px; flex-wrap:wrap; }
+  .en-updates time { font-size:.875rem; color:color-mix(in srgb,var(--text) 55%,transparent); font-variant-numeric:tabular-nums; }
+  .en-updates > a { display:inline-block; margin-top:12px; font-size:.875rem; color:var(--link); }
+  @media(max-width:700px){.en-territories > a{margin-left:0!important}}
 </style>
