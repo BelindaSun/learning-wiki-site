@@ -1,0 +1,61 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getAllDocs, getDocBySlug, stripMd } from "../../lib/content";
+
+const docs = getAllDocs()
+  .filter((doc) => doc.language === "zh" && !doc.dir.startsWith("docs/conversations"))
+  .map((source) => {
+    const translated = getDocBySlug(source.slug, "en");
+    const doc = translated || source;
+    const href = source.slug.endsWith("/index")
+      ? `/en/${source.slug.slice(0, -"index".length)}`
+      : `/en/${source.slug}`;
+    const summary = doc.highlight ? stripMd(doc.highlight) : "";
+    const text = [doc.title, summary, ...doc.headings.map((h) => h.text)].join(" ").toLowerCase();
+    return { href, title: doc.title, summary, text, translated: Boolean(translated) };
+  });
+---
+
+<Base title="Search" lang="en">
+  <main class="search-page">
+    <p class="back-nav"><a href="#" data-back>← Back</a></p>
+    <h1>Search</h1>
+    <p>Search titles, summaries, and section headings. Chinese titles remain searchable while their translations are in progress.</p>
+    <input id="q" type="search" placeholder="Try: Memory, Agent, trust…" autofocus />
+    <p id="status">Type a concept to begin.</p>
+    <ul id="results">
+      {docs.map((doc) => (
+        <li data-search={doc.text} hidden>
+          <a href={doc.href}>{doc.title}</a>
+          {!doc.translated && <small>Translation in progress</small>}
+          {doc.summary && <p>{doc.summary}</p>}
+        </li>
+      ))}
+    </ul>
+  </main>
+</Base>
+
+<script>
+  const input = document.getElementById("q");
+  const status = document.getElementById("status");
+  const items = Array.from(document.querySelectorAll("#results li"));
+  input.addEventListener("input", () => {
+    const query = input.value.trim().toLowerCase();
+    let count = 0;
+    items.forEach((item) => {
+      const match = query && item.dataset.search.includes(query);
+      item.hidden = !match;
+      if (match) count += 1;
+    });
+    status.textContent = query ? `${count} result${count === 1 ? "" : "s"}` : "Type a concept to begin.";
+  });
+</script>
+
+<style>
+  .search-page{width:min(760px,calc(100% - 48px));margin:40px auto 100px}
+  h1{font:600 2.2rem var(--font-serif);margin-bottom:4px}
+  .search-page>p,#results p,small{color:var(--text-muted)}
+  input{width:100%;margin-top:12px;padding:13px 15px;border:1px solid var(--border);border-radius:9px;background:var(--bg);color:var(--text);font:inherit}
+  ul{padding:0;list-style:none}li{padding:16px 0;border-top:1px solid var(--border)}li[hidden]{display:none}
+  li>a{display:block;font:600 1.08rem var(--font-serif)}small{font-size:.76rem}li p{margin:4px 0 0;font-size:.88rem}
+</style>

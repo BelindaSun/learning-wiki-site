@@ -3,7 +3,7 @@ import Article from "../layouts/Article.astro";
 import { getAllDocs } from "../lib/content";
 
 export async function getStaticPaths() {
-  const docs = getAllDocs();
+  const docs = getAllDocs().filter((d) => d.language === "zh");
   return docs
     .filter((d) => !d.slug.endsWith("/index"))
     .map((d) => ({

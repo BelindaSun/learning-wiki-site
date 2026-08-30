@@ -171,6 +171,27 @@ a:hover {
   color: var(--link);
 }
 
+.language-switch {
+  display: inline-flex;
+  gap: 3px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.site-header nav .language-switch a {
+  min-width: 30px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.site-header nav .language-switch a.active {
+  background: var(--text);
+  color: var(--bg);
+}
+
 .settings-btn {
   display: flex;
   align-items: center;

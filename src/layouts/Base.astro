@@ -4,16 +4,21 @@ import Analytics from "@vercel/analytics/astro";
 
 interface Props {
   title: string;
+  lang?: "zh" | "en";
 }
 
-const { title } = Astro.props;
+const { title, lang = "zh" } = Astro.props;
+const isEnglish = lang === "en";
+const isNotFound = Astro.url.pathname === "/404.html" || Astro.url.pathname === "/404/";
+const zhPath = isNotFound ? "/" : Astro.url.pathname.replace(/^\/en(?=\/|$)/, "") || "/";
+const enPath = `/en${zhPath === "/" ? "/" : zhPath}`;
 
 const pageUrl = `https://learning-wiki-site.vercel.app${Astro.url.pathname}`;
 const feedbackSubject = `Learning Wiki 反馈: ${title}`;
 ---
 
 <!doctype html>
-<html lang="zh">
+<html lang={isEnglish ? "en" : "zh-CN"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,14 +46,18 @@ const feedbackSubject = `Learning Wiki 反馈: ${title}`;
         <span class="brand-name">Belinda Sun</span>
       </a>
       <nav>
-        <a href="/">首页</a>
-        <a href="/#territories">知识地图</a>
-        <a href="/start-here">Learn</a>
-        <a href="/glossary">Look Up</a>
-        <a href="/mental-models">Explore</a>
-        <a href="/search">搜索</a>
-        <a class="muted" href="/CHANGELOG">更新日志</a>
-        <button id="settings-btn" class="settings-btn" type="button" aria-expanded="false" aria-label="阅读设置" title="阅读设置">
+        <a href={isEnglish ? "/en/" : "/"}>{isEnglish ? "Home" : "首页"}</a>
+        <a href={isEnglish ? "/en/#territories" : "/#territories"}>{isEnglish ? "Knowledge Map" : "知识地图"}</a>
+        <a href={isEnglish ? "/en/start-here" : "/start-here"}>Learn</a>
+        <a href={isEnglish ? "/en/glossary" : "/glossary"}>Look Up</a>
+        <a href={isEnglish ? "/en/mental-models" : "/mental-models"}>Explore</a>
+        <a href={isEnglish ? "/en/search" : "/search"}>{isEnglish ? "Search" : "搜索"}</a>
+        <a class="muted" href={isEnglish ? "/en/CHANGELOG" : "/CHANGELOG"}>{isEnglish ? "Updates" : "更新日志"}</a>
+        <span class="language-switch" aria-label={isEnglish ? "Language" : "语言"}>
+          <a class={!isEnglish ? "active" : ""} href={zhPath}>中</a>
+          <a class={isEnglish ? "active" : ""} href={enPath}>EN</a>
+        </span>
+        <button id="settings-btn" class="settings-btn" type="button" aria-expanded="false" aria-label={isEnglish ? "Reading settings" : "阅读设置"} title={isEnglish ? "Reading settings" : "阅读设置"}>
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path
@@ -60,79 +69,79 @@ const feedbackSubject = `Learning Wiki 反馈: ${title}`;
 
       <div id="settings-panel" class="settings-panel" hidden>
         <div class="settings-group">
-          <div class="settings-label">主题</div>
+          <div class="settings-label">{isEnglish ? "Theme" : "主题"}</div>
           <div class="theme-grid">
             <button class="theme-card" data-set-theme="default" type="button">
               <span class="theme-swatch theme-swatch-default" aria-hidden="true"></span>
-              默认米黄
+              {isEnglish ? "Default" : "默认米黄"}
             </button>
             <button class="theme-card" data-set-theme="sepia" type="button">
               <span class="theme-swatch theme-swatch-sepia" aria-hidden="true"></span>
-              纸张米黄
+              {isEnglish ? "Sepia" : "纸张米黄"}
             </button>
             <button class="theme-card" data-set-theme="dark" type="button">
               <span class="theme-swatch theme-swatch-dark" aria-hidden="true"></span>
-              夜间深色
+              {isEnglish ? "Dark" : "夜间深色"}
             </button>
             <button class="theme-card" data-set-theme="contrast" type="button">
               <span class="theme-swatch theme-swatch-contrast" aria-hidden="true"></span>
-              高对比
+              {isEnglish ? "Contrast" : "高对比"}
             </button>
           </div>
         </div>
 
         <div class="settings-group">
-          <div class="settings-label">字体</div>
+          <div class="settings-label">{isEnglish ? "Font" : "字体"}</div>
           <div class="option-row">
-            <button class="option-btn" data-set-font="">默认</button>
-            <button class="option-btn" data-set-font="serif">衬线</button>
-            <button class="option-btn" data-set-font="sans">无衬线</button>
+            <button class="option-btn" data-set-font="">{isEnglish ? "Default" : "默认"}</button>
+            <button class="option-btn" data-set-font="serif">{isEnglish ? "Serif" : "衬线"}</button>
+            <button class="option-btn" data-set-font="sans">{isEnglish ? "Sans" : "无衬线"}</button>
           </div>
         </div>
 
         <div class="settings-group">
-          <div class="settings-label">字号</div>
+          <div class="settings-label">{isEnglish ? "Text size" : "字号"}</div>
           <div class="option-row">
-            <button class="option-btn" data-set-size="small">小</button>
-            <button class="option-btn" data-set-size="medium">中</button>
-            <button class="option-btn" data-set-size="large">大</button>
-            <button class="option-btn" data-set-size="xlarge">特大</button>
+            <button class="option-btn" data-set-size="small">{isEnglish ? "Small" : "小"}</button>
+            <button class="option-btn" data-set-size="medium">{isEnglish ? "Medium" : "中"}</button>
+            <button class="option-btn" data-set-size="large">{isEnglish ? "Large" : "大"}</button>
+            <button class="option-btn" data-set-size="xlarge">{isEnglish ? "Extra large" : "特大"}</button>
           </div>
         </div>
 
-        <button id="settings-reset" class="settings-reset" type="button">恢复默认</button>
+        <button id="settings-reset" class="settings-reset" type="button">{isEnglish ? "Reset" : "恢复默认"}</button>
       </div>
     </header>
     <slot />
     <footer class="site-footer">
-      <button type="button" id="feedback-btn" class="feedback-link">反馈 / Feedback</button>
+      <button type="button" id="feedback-btn" class="feedback-link">{isEnglish ? "Feedback" : "反馈 / Feedback"}</button>
       <span>learning-wiki is maintained by BelindaSun · Deployed with Astro + Vercel</span>
     </footer>
 
     <div id="feedback-modal" class="feedback-modal" hidden>
       <div class="feedback-backdrop" data-feedback-close></div>
       <div class="feedback-dialog" role="dialog" aria-modal="true" aria-labelledby="feedback-heading">
-        <button type="button" class="feedback-close" data-feedback-close aria-label="关闭">×</button>
-        <h2 id="feedback-heading" class="feedback-heading">反馈 / Feedback</h2>
+        <button type="button" class="feedback-close" data-feedback-close aria-label={isEnglish ? "Close" : "关闭"}>×</button>
+        <h2 id="feedback-heading" class="feedback-heading">{isEnglish ? "Feedback" : "反馈 / Feedback"}</h2>
         <form id="feedback-form" class="feedback-form">
           <input type="hidden" name="access_key" value="727ae9b4-ceb1-4e29-9208-dd32df45593d" />
           <input type="hidden" name="subject" value={feedbackSubject} />
-          <input type="hidden" name="from_name" value="Learning Wiki 反馈" />
-          <input type="hidden" name="页面" id="feedback-page" value={pageUrl} />
+          <input type="hidden" name="from_name" value={isEnglish ? "Learning Wiki Feedback" : "Learning Wiki 反馈"} />
+          <input type="hidden" name={isEnglish ? "Page" : "页面"} id="feedback-page" value={pageUrl} />
           <input type="checkbox" name="botcheck" class="feedback-botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <label class="feedback-field">
-            <span>名字（选填）</span>
-            <input type="text" name="名字" autocomplete="name" />
+            <span>{isEnglish ? "Name (optional)" : "名字（选填）"}</span>
+            <input type="text" name={isEnglish ? "Name" : "名字"} autocomplete="name" />
           </label>
           <label class="feedback-field">
-            <span>内容</span>
-            <textarea name="内容" rows="4" required placeholder="发现的问题、建议，或者只是想说点什么…"></textarea>
+            <span>{isEnglish ? "Message" : "内容"}</span>
+            <textarea name={isEnglish ? "Message" : "内容"} rows="4" required placeholder={isEnglish ? "A correction, a suggestion, or simply something you'd like to say…" : "发现的问题、建议，或者只是想说点什么…"}></textarea>
           </label>
-          <button type="submit" class="feedback-submit">提交</button>
+          <button type="submit" class="feedback-submit" data-idle-label={isEnglish ? "Send" : "提交"} data-sending-label={isEnglish ? "Sending…" : "提交中…"}>{isEnglish ? "Send" : "提交"}</button>
         </form>
-        <p id="feedback-success" class="feedback-success" hidden>谢谢，已收到 🌿</p>
+        <p id="feedback-success" class="feedback-success" hidden>{isEnglish ? "Thank you—received 🌿" : "谢谢，已收到 🌿"}</p>
         <p id="feedback-error" class="feedback-error" hidden>
-          提交失败了，稍后再试一次，或直接邮件 sunbelinda1108@gmail.com 🙏
+          {isEnglish ? "Something went wrong. Please try again later, or email sunbelinda1108@gmail.com 🙏" : "提交失败了，稍后再试一次，或直接邮件 sunbelinda1108@gmail.com 🙏"}
         </p>
       </div>
     </div>
@@ -145,7 +154,7 @@ const feedbackSubject = `Learning Wiki 反馈: ${title}`;
           if (document.referrer.startsWith(location.origin) && history.length > 1) {
             history.back();
           } else {
-            location.href = "/";
+            location.href = document.documentElement.lang === "en" ? "/en/" : "/";
           }
         });
       });
@@ -261,7 +270,7 @@ const feedbackSubject = `Learning Wiki 反馈: ${title}`;
         fbForm.hidden = false;
         fbForm.reset();
         fbModal.hidden = false;
-        const first = fbForm.querySelector('input[name="名字"]');
+        const first = fbForm.querySelector('input[autocomplete="name"]');
         if (first) first.focus();
       }
 
@@ -281,7 +290,7 @@ const feedbackSubject = `Learning Wiki 反馈: ${title}`;
         e.preventDefault();
         fbError.hidden = true;
         fbSubmit.disabled = true;
-        fbSubmit.textContent = "提交中…";
+        fbSubmit.textContent = fbSubmit.dataset.sendingLabel;
         const pageField = document.getElementById("feedback-page");
         if (pageField) pageField.value = location.href;
         const data = Object.fromEntries(new FormData(fbForm).entries());
@@ -305,7 +314,7 @@ const feedbackSubject = `Learning Wiki 反馈: ${title}`;
           fbError.hidden = false;
         } finally {
           fbSubmit.disabled = false;
-          fbSubmit.textContent = "提交";
+          fbSubmit.textContent = fbSubmit.dataset.idleLabel;
         }
       });
     </script>

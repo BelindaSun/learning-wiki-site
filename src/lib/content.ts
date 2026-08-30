@@ -19,6 +19,7 @@ export interface Heading {
 }
 
 export interface WikiDoc {
+  language: "zh" | "en";
   /** slug relative to site root, e.g. "docs/ai-core/agent-architecture" or "mental-models" */
   slug: string;
   /** absolute path in the cloned repo */
@@ -52,7 +53,11 @@ export const CATEGORIES: CategoryMeta[] = [
 ];
 
 function slugForFile(repoRelativePath: string): string {
-  return repoRelativePath.replace(/\.md$/i, "").replace(/\\/g, "/");
+  return repoRelativePath.replace(/\.en\.md$/i, "").replace(/\.md$/i, "").replace(/\\/g, "/");
+}
+
+function languageForFile(repoRelativePath: string): "zh" | "en" {
+  return repoRelativePath.toLowerCase().endsWith(".en.md") ? "en" : "zh";
 }
 
 function walk(dir: string, base: string, out: string[]) {
@@ -73,6 +78,7 @@ function walk(dir: string, base: string, out: string[]) {
 function rewriteLinks() {
   return (tree: any, file: any) => {
     const fileDir: string = file.data.dir ?? "";
+    const language: "zh" | "en" = file.data.language ?? "zh";
     visit(tree, "link", (node: any) => {
       const url: string = node.url || "";
       if (/^https?:\/\//i.test(url) || url.startsWith("mailto:")) return;
@@ -85,7 +91,8 @@ function rewriteLinks() {
       // "/docs/foo/" (trailing slash), not "/docs/foo/index" (no page there).
       let route = resolved.replace(/\.md$/i, "");
       route = route.endsWith("/index") ? route.slice(0, -"index".length) : route;
-      node.url = "/" + route + (anchor ? `#${anchor}` : "");
+      const prefix = language === "en" ? "/en/" : "/";
+      node.url = prefix + route + (anchor ? `#${anchor}` : "");
     });
   };
 }
@@ -132,9 +139,9 @@ const inlineProcessor = unified()
  * relative to `dir` just like the main article body -- without this, a
  * markdown link inside the highlight line silently stays as a raw relative
  * path in the rendered HTML instead of becoming a site route. */
-function renderInline(text: string, dir: string): string {
+function renderInline(text: string, dir: string, language: "zh" | "en"): string {
   const tree = inlineProcessor.parse(text);
-  const hastTree = inlineProcessor.runSync(tree, { data: { dir } } as any);
+  const hastTree = inlineProcessor.runSync(tree, { data: { dir, language } } as any);
   const html = inlineProcessor.stringify(hastTree as any);
   return html.replace(/^<p>/, "").replace(/<\/p>\n?$/, "");
 }
@@ -154,6 +161,7 @@ function parseDoc(repoRelativePath: string): WikiDoc {
   const raw = readFileSync(filePath, "utf-8");
   const dir = path.posix.dirname(repoRelativePath.replace(/\\/g, "/"));
   const normDir = dir === "." ? "" : dir;
+  const language = languageForFile(repoRelativePath);
 
   const lines = raw.split("\n");
   let title = repoRelativePath;
@@ -179,7 +187,7 @@ function parseDoc(repoRelativePath: string): WikiDoc {
     if (lines[i].trim() !== "" && !lines[i].startsWith(">")) break;
   }
 
-  const highlightHtml = highlight ? renderInline(highlight, normDir) : null;
+  const highlightHtml = highlight ? renderInline(highlight, normDir, language) : null;
 
   let updatedLine: string | null = null;
   const updatedMatch = raw.match(/\*\*最后更新\*\*[：:]\s*(.+)/);
@@ -193,12 +201,13 @@ function parseDoc(repoRelativePath: string): WikiDoc {
   const bodyRaw = bodyLines.join("\n").replace(/^\s*\n+/, "");
 
   const tree = processor.parse(bodyRaw);
-  (tree as any).data = { dir: normDir };
+  (tree as any).data = { dir: normDir, language };
   const headings = extractHeadings(tree);
-  const hastTree = processor.runSync(tree, { data: { dir: normDir } } as any);
+  const hastTree = processor.runSync(tree, { data: { dir: normDir, language } } as any);
   const html = processor.stringify(hastTree as any);
 
   return {
+    language,
     slug: slugForFile(repoRelativePath),
     filePath,
     dir: normDir,
@@ -229,18 +238,18 @@ export function getAllDocs(): WikiDoc[] {
   return _cache;
 }
 
-export function getDocBySlug(slug: string): WikiDoc | undefined {
-  return getAllDocs().find((d) => d.slug === slug);
+export function getDocBySlug(slug: string, language: "zh" | "en" = "zh"): WikiDoc | undefined {
+  return getAllDocs().find((d) => d.slug === slug && d.language === language);
 }
 
-export function getDocsInCategory(categoryKey: string): WikiDoc[] {
+export function getDocsInCategory(categoryKey: string, language: "zh" | "en" = "zh"): WikiDoc[] {
   return getAllDocs()
-    .filter((d) => d.dir === `docs/${categoryKey}` && !d.slug.endsWith("/index"))
+    .filter((d) => d.language === language && d.dir === `docs/${categoryKey}` && !d.slug.endsWith("/index"))
     .sort((a, b) => a.title.localeCompare(b.title, "zh"));
 }
 
 export function getChangelogLatest(): { date: string; topic: string } | null {
-  const doc = getDocBySlug("CHANGELOG");
+  const doc = getDocBySlug("CHANGELOG", "zh");
   if (!doc) return null;
   // Match the first "## [version] - date" block, then whatever "### " heading
   // comes right after it, regardless of emoji/prefix (Daily Update, 结构调整, etc.)

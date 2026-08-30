@@ -1,0 +1,65 @@
+---
+import Base from "../../layouts/Base.astro";
+import Article from "../../layouts/Article.astro";
+import { getAllDocs, getDocBySlug } from "../../lib/content";
+
+export async function getStaticPaths() {
+  return getAllDocs()
+    .filter((doc) => doc.language === "zh" && !doc.slug.endsWith("/index"))
+    .map((doc) => ({
+      params: { slug: doc.slug },
+      props: {
+        source: doc,
+        translation: getDocBySlug(doc.slug, "en"),
+      },
+    }));
+}
+
+const { source, translation } = Astro.props;
+---
+
+{
+  translation ? (
+    <Article doc={translation} lang="en" />
+  ) : (
+    <Base title={source.title} lang="en">
+      <main class="translation-pending">
+        <p class="back-nav"><a href="#" data-back>← Back</a></p>
+        <p class="translation-label">ENGLISH TRANSLATION IN PROGRESS</p>
+        <h1>{source.title}</h1>
+        <p>
+          This article is available in Chinese. Its English edition is being
+          translated and edited for clarity—not published as raw machine
+          translation.
+        </p>
+        <a class="translation-link" href={`/${source.slug}`}>Read the Chinese original →</a>
+      </main>
+    </Base>
+  )
+}
+
+<style>
+  .translation-pending {
+    width: min(680px, calc(100% - 48px));
+    margin: 56px auto 120px;
+  }
+  .translation-label {
+    margin-top: 48px;
+    color: var(--accent-strong);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+  }
+  .translation-pending h1 {
+    font-family: var(--font-serif);
+    font-size: 2.2rem;
+    line-height: 1.2;
+  }
+  .translation-pending p {
+    color: var(--text-muted);
+  }
+  .translation-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+</style>

@@ -5,9 +5,11 @@ import { CATEGORIES } from "../lib/content";
 
 interface Props {
   doc: WikiDoc;
+  lang?: "zh" | "en";
 }
 
-const { doc } = Astro.props;
+const { doc, lang = doc.language } = Astro.props;
+const isEnglish = lang === "en";
 
 const categoryKey = doc.dir.startsWith("docs/") ? doc.dir.replace(/^docs\//, "") : null;
 const category = CATEGORIES.find((c) => c.key === categoryKey);
@@ -15,15 +17,16 @@ const isConversation = doc.dir === "docs/conversations";
 const breadcrumbLabel = category
   ? category.label
   : isConversation
-  ? "完整对话记录"
+  ? (isEnglish ? "Original conversations" : "完整对话记录")
   : null;
-const breadcrumbHref = category ? `/docs/${category.key}/` : isConversation ? "/docs/conversations/" : null;
+const languagePrefix = isEnglish ? "/en" : "";
+const breadcrumbHref = category ? `${languagePrefix}/docs/${category.key}/` : isConversation ? `${languagePrefix}/docs/conversations/` : null;
 ---
 
-<Base title={doc.title}>
+<Base title={doc.title} lang={lang}>
   <div class="article-page">
     <div>
-      <p class="back-nav"><a href="#" data-back>← 返回上一页</a></p>
+      <p class="back-nav"><a href="#" data-back>← {isEnglish ? "Back" : "返回上一页"}</a></p>
       {
         breadcrumbLabel && (
           <p class="breadcrumb">
@@ -32,14 +35,14 @@ const breadcrumbHref = category ? `/docs/${category.key}/` : isConversation ? "/
         )
       }
       <h1 class="article-title">{doc.title}</h1>
-      {doc.updatedLine && <p class="article-updated">最后更新: {doc.updatedLine}</p>}
+      {doc.updatedLine && <p class="article-updated">{isEnglish ? "Last updated" : "最后更新"}: {doc.updatedLine}</p>}
       {doc.highlightHtml && <div class="article-highlight" set:html={doc.highlightHtml} />}
       <div class="article-body" set:html={doc.html} />
     </div>
     {
       doc.headings.length > 0 && (
         <aside class="article-toc">
-          <p class="toc-label">本页目录</p>
+          <p class="toc-label">{isEnglish ? "On this page" : "本页目录"}</p>
           <ul>
             {doc.headings.map((h) => (
               <li class={h.depth === 3 ? "depth-3" : ""}>

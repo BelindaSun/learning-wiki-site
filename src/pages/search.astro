@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 import { getAllDocs, stripMd } from "../lib/content";
 
 const docs = getAllDocs()
-  .filter((doc) => !doc.dir.startsWith("docs/conversations"))
+  .filter((doc) => doc.language === "zh" && !doc.dir.startsWith("docs/conversations"))
   .map((doc) => {
     const href = doc.slug.endsWith("/index")
       ? `/${doc.slug.slice(0, -"index".length)}`

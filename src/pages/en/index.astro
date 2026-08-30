@@ -1,0 +1,55 @@
+---
+import Base from "../../layouts/Base.astro";
+import { CATEGORIES } from "../../lib/content";
+---
+
+<Base title="Home" lang="en">
+  <main class="en-home">
+    <section class="en-hero">
+      <span>PERSONAL LEARNING WIKI</span>
+      <h1>AI &amp; Beyond</h1>
+      <p>
+        A growing map of what I am learning—mostly about AI, and occasionally
+        about everything around it. Built from conversations, papers,
+        experiments, and changes of mind.
+      </p>
+    </section>
+
+    <section class="en-doors">
+      <h2>Three ways in</h2>
+      <div>
+        <a href="/en/start-here"><strong>Learn</strong><span>Build the minimum map first</span></a>
+        <a href="/en/glossary"><strong>Look Up</strong><span>Find a term when you get stuck</span></a>
+        <a href="/en/mental-models"><strong>Explore</strong><span>See how ideas changed over time</span></a>
+      </div>
+    </section>
+
+    <section id="territories" class="en-territories">
+      <h2>Knowledge territories</h2>
+      <p>Ordered by dependency: foundations first, impact last.</p>
+      {CATEGORIES.map((category, index) => (
+        <a href={`/en/docs/${category.key}/`}>
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <strong>{category.label}</strong>
+        </a>
+      ))}
+    </section>
+  </main>
+</Base>
+
+<style>
+  .en-home { width:min(1040px,calc(100% - 48px)); margin:0 auto 100px; }
+  .en-hero { padding:88px 0 48px; border-bottom:4px double var(--accent-strong); }
+  .en-hero > span { color:var(--text-muted); font-size:.78rem; letter-spacing:.08em; }
+  .en-hero h1 { margin:8px 0 18px; font:600 clamp(3.2rem,8vw,5.5rem)/1 var(--font-serif); }
+  .en-hero p { max-width:680px; font-size:1.08rem; color:var(--text-muted); }
+  .en-doors,.en-territories { padding:40px 0; }
+  .en-doors h2,.en-territories h2 { font-family:var(--font-serif); }
+  .en-doors > div { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .en-doors a { padding:18px; border:1px solid var(--border); border-radius:10px; }
+  .en-doors strong,.en-doors span { display:block; }
+  .en-doors span { color:var(--text-muted); font-size:.86rem; }
+  .en-territories > a { display:flex; gap:18px; padding:18px 0; border-top:1px solid var(--border); font:600 1.35rem var(--font-serif); }
+  .en-territories > a span { color:var(--accent-strong); font:400 .8rem var(--font-sans); }
+  @media(max-width:650px){.en-doors > div{grid-template-columns:1fr}.en-hero{padding-top:48px}}
+</style>

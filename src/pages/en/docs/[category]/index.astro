@@ -1,0 +1,44 @@
+---
+import Base from "../../../../layouts/Base.astro";
+import Article from "../../../../layouts/Article.astro";
+import { CATEGORIES, getDocBySlug } from "../../../../lib/content";
+
+export async function getStaticPaths() {
+  return CATEGORIES.map((category) => ({
+    params: { category: category.key },
+    props: {
+      category,
+      source: getDocBySlug(`docs/${category.key}/index`, "zh"),
+      translation: getDocBySlug(`docs/${category.key}/index`, "en"),
+    },
+  }));
+}
+
+const { category, source, translation } = Astro.props;
+---
+
+{
+  translation ? (
+    <Article doc={translation} lang="en" />
+  ) : (
+    <Base title={category.label} lang="en">
+      <main class="translation-pending">
+        <p class="back-nav"><a href="/en/#territories">← Knowledge Map</a></p>
+        <p>ENGLISH TRANSLATION IN PROGRESS</p>
+        <h1>{category.label}</h1>
+        <div class="actions">
+          <a href={`/docs/${category.key}/`}>Read the Chinese map →</a>
+          {source && <span>{source.title}</span>}
+        </div>
+      </main>
+    </Base>
+  )
+}
+
+<style>
+  .translation-pending { width:min(680px,calc(100% - 48px)); margin:56px auto 120px; }
+  .translation-pending > p:not(.back-nav) { margin-top:48px; color:var(--accent-strong); font-size:.78rem; letter-spacing:.08em; }
+  .translation-pending h1 { font:600 2.4rem var(--font-serif); }
+  .actions { display:flex; flex-direction:column; gap:8px; }
+  .actions span { color:var(--text-muted); }
+</style>
