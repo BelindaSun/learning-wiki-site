@@ -93,8 +93,9 @@ function rewriteLinks() {
 function extractHeadings(tree: any): Heading[] {
   const headings: Heading[] = [];
   visit(tree, "heading", (node: any) => {
-    if (node.depth < 2 || node.depth > 3) return;
+    if (node.depth !== 2) return;
     const text = mdastToString(node);
+    if (["目录", "反馈 / Feedback"].includes(text)) return;
     const id = (node.data && node.data.id) || slugify(text);
     headings.push({ depth: node.depth, text, id });
   });

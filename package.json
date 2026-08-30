@@ -8,7 +8,8 @@
   "scripts": {
     "fetch-content": "node scripts/fetch-content.mjs",
     "dev": "npm run fetch-content && astro dev",
-    "build": "node scripts/fetch-content.mjs --force && astro build",
+    "build": "node scripts/fetch-content.mjs --force && astro build && node scripts/check-links.mjs",
+    "check-links": "node scripts/check-links.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },

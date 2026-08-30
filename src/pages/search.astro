@@ -1,0 +1,121 @@
+---
+import Base from "../layouts/Base.astro";
+import { getAllDocs, stripMd } from "../lib/content";
+
+const docs = getAllDocs()
+  .filter((doc) => !doc.dir.startsWith("docs/conversations"))
+  .map((doc) => {
+    const href = doc.slug.endsWith("/index")
+      ? `/${doc.slug.slice(0, -"index".length)}`
+      : `/${doc.slug}`;
+    const summary = doc.highlight ? stripMd(doc.highlight) : "";
+    const searchText = [doc.title, summary, ...doc.headings.map((h) => h.text)]
+      .join(" ")
+      .toLocaleLowerCase();
+    return { href, title: doc.title, summary, searchText };
+  });
+---
+
+<Base title="搜索">
+  <main class="search-page">
+    <p class="back-nav"><a href="#" data-back>← 返回上一页</a></p>
+    <h1>搜索</h1>
+    <p class="search-intro">搜索标题、核心概念和小节标题。中文或英文都可以。</p>
+    <label class="search-box">
+      <span class="sr-only">搜索学习 Wiki</span>
+      <input id="wiki-search" type="search" placeholder="例如：Memory、内存墙、可信度…" autocomplete="off" autofocus />
+    </label>
+    <p id="search-status" class="search-status">输入一个概念开始搜索。</p>
+    <ul id="search-results" class="search-results">
+      {docs.map((doc) => (
+        <li data-search={doc.searchText} hidden>
+          <a href={doc.href}>{doc.title}</a>
+          {doc.summary && <p>{doc.summary}</p>}
+        </li>
+      ))}
+    </ul>
+  </main>
+</Base>
+
+<script>
+  const input = document.getElementById("wiki-search");
+  const status = document.getElementById("search-status");
+  const items = Array.from(document.querySelectorAll("#search-results li"));
+
+  function updateResults() {
+    const query = input.value.trim().toLocaleLowerCase();
+    let count = 0;
+    items.forEach((item) => {
+      const match = query.length > 0 && item.dataset.search.includes(query);
+      item.hidden = !match;
+      if (match) count += 1;
+    });
+    status.textContent = query ? `找到 ${count} 个结果` : "输入一个概念开始搜索。";
+  }
+
+  input.addEventListener("input", updateResults);
+</script>
+
+<style>
+  .search-page {
+    width: min(760px, calc(100% - 48px));
+    margin: 40px auto 100px;
+  }
+  .search-page h1 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 2.2rem;
+  }
+  .search-intro,
+  .search-status,
+  .search-results p { color: var(--text-muted); }
+  .search-box input {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: var(--bg);
+    color: var(--text);
+    font: inherit;
+    font-size: 1rem;
+  }
+  .search-box input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .search-status {
+    min-height: 1.7em;
+    font-size: 0.88rem;
+  }
+  .search-results {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .search-results li {
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+  }
+  .search-results li[hidden] { display: none; }
+  .search-results a {
+    font-family: var(--font-serif);
+    font-size: 1.08rem;
+    font-weight: 600;
+  }
+  .search-results p {
+    margin: 4px 0 0;
+    font-size: 0.88rem;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
