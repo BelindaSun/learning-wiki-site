@@ -50,6 +50,7 @@ export const CATEGORIES: CategoryMeta[] = [
   { key: "ai-application", label: "AI in Practice", icon: "🛠️", description: "Skill 设计与实现 · 工作流设计模式 · MCP 与集成 · 真实案例" },
   { key: "ai-research", label: "AI Research", icon: "🔬", description: "AI 模型的优化和评估方法" },
   { key: "career-impact", label: "Industry & Impact", icon: "🌍", description: "AI 遇上世界：职业冲击 · 个人能力建设 · 未来趋势" },
+  { key: "beyond", label: "Beyond", icon: "🎨", description: "AI 之外：金融与投资 · 设计与视觉审美 · 各种感兴趣的话题" },
 ];
 
 function slugForFile(repoRelativePath: string): string {
@@ -89,7 +90,7 @@ function rewriteLinks() {
       // content is served at the category's own listing route instead, see
       // [category]/index.astro), so a link to e.g. "index.md" must resolve to
       // "/docs/foo/" (trailing slash), not "/docs/foo/index" (no page there).
-      let route = resolved.replace(/\.md$/i, "");
+      let route = resolved.replace(/\.en\.md$/i, "").replace(/\.md$/i, "");
       route = route.endsWith("/index") ? route.slice(0, -"index".length) : route;
       const prefix = language === "en" ? "/en/" : "/";
       node.url = prefix + route + (anchor ? `#${anchor}` : "");
