@@ -254,7 +254,7 @@ export function getChangelogLatest(language: "zh" | "en" = "zh"): { date: string
   if (!doc) return null;
   // Match the first "## [version] - date" block, then whatever "### " heading
   // comes right after it, regardless of emoji/prefix (Daily Update, 结构调整, etc.)
-  const m = doc.raw.match(/## \[.*?\] - (.+?)\n+### (?:📝 Daily Update - )?(.+)/);
+  const m = doc.raw.match(/###? \[.*?\] - (.+?)\n+####? (?:📝 (?:Daily Update|新增)[：:\- ] *)?(.+)/);
   if (!m) return null;
   return { date: m[1].trim(), topic: m[2].trim() };
 }
