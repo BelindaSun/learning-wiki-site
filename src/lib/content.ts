@@ -75,7 +75,13 @@ function walk(dir: string, base: string, out: string[]) {
 }
 
 /** Rewrites relative .md links (with optional #anchor) found in raw markdown text
- * into site-absolute routes, resolved relative to the linking file's directory. */
+ * into site-absolute routes, resolved relative to the linking file's directory.
+ * Relative links to non-markdown files (film.js, score.py, *.mp4, ...) get the
+ * same treatment: rewritten to a site-absolute path so they resolve identically
+ * from every page. The target file itself is mirrored into public/ by
+ * fetch-content.mjs. No /en/ prefix for assets: there is only one copy of each
+ * file, shared by both languages. GitHub rendering is unaffected — this rewrite
+ * happens at build time only. */
 function rewriteLinks() {
   return (tree: any, file: any) => {
     const fileDir: string = file.data.dir ?? "";
@@ -84,8 +90,9 @@ function rewriteLinks() {
       const url: string = node.url || "";
       if (/^https?:\/\//i.test(url) || url.startsWith("mailto:")) return;
       const [pathPart, anchor] = url.split("#");
-      if (!pathPart || !pathPart.toLowerCase().endsWith(".md")) return;
+      if (!pathPart) return;
       const resolved = path.posix.normalize(path.posix.join(fileDir, pathPart));
+      if (pathPart.toLowerCase().endsWith(".md")) {
       // `[...slug].astro` never routes a doc whose slug ends in "/index" (its
       // content is served at the category's own listing route instead, see
       // [category]/index.astro), so a link to e.g. "index.md" must resolve to
@@ -94,6 +101,13 @@ function rewriteLinks() {
       route = route.endsWith("/index") ? route.slice(0, -"index".length) : route;
       const prefix = language === "en" ? "/en/" : "/";
       node.url = prefix + route + (anchor ? `#${anchor}` : "");
+      return;
+      }
+      // Non-markdown file target (has an extension): rewrite to site-absolute
+      // path so check-links and browsers resolve it the same way.
+      if (/\.[a-z0-9]+$/i.test(pathPart)) {
+        node.url = "/" + resolved + (anchor ? `#${anchor}` : "");
+      }
     });
   };
 }

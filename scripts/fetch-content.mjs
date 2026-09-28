@@ -41,6 +41,33 @@ function syncAssets() {
   walk(CACHE_DIR);
 }
 
+// The film/ section documents Xiao De's films with relative links to the real
+// project files sitting next to the READMEs (film.js, score.py, render.js,
+// *.mp4). Mirror those files into public/film/ so the links resolve on the
+// site instead of 404ing (and failing check-links, which breaks the build).
+function syncFilm() {
+  const src = path.join(CACHE_DIR, "film");
+  if (!existsSync(src)) return;
+  const dest = path.join(PUBLIC_DIR, "film");
+  // Full remirror each time, so renamed/removed files don't linger as orphans.
+  rmSync(dest, { recursive: true, force: true });
+  const walk = (dir) => {
+    for (const entry of readdirSync(dir)) {
+      if (entry.startsWith(".")) continue;
+      const full = path.join(dir, entry);
+      if (statSync(full).isDirectory()) {
+        walk(full);
+      } else if (!entry.toLowerCase().endsWith(".md")) {
+        const target = path.join(dest, path.relative(src, full));
+        mkdirSync(path.dirname(target), { recursive: true });
+        copyFileSync(full, target);
+      }
+    }
+  };
+  walk(src);
+  console.log("[fetch-content] synced film files -> public/film/");
+}
+
 if (existsSync(CACHE_DIR)) {
   if (force) {
     rmSync(CACHE_DIR, { recursive: true, force: true });
@@ -49,6 +76,7 @@ if (existsSync(CACHE_DIR)) {
     try {
       execSync("git pull --ff-only", { cwd: CACHE_DIR, stdio: "inherit" });
       syncAssets();
+      syncFilm();
       process.exit(0);
     } catch (e) {
       console.warn("[fetch-content] pull failed, re-cloning:", e.message);
@@ -60,3 +88,4 @@ if (existsSync(CACHE_DIR)) {
 console.log("[fetch-content] cloning", REPO_URL);
 execSync(`git clone --depth 1 ${REPO_URL} "${CACHE_DIR}"`, { stdio: "inherit" });
 syncAssets();
+syncFilm();
